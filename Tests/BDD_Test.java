@@ -14,7 +14,7 @@ public class BDD_Test {
         System.out.println("----");
 
         Ordering ordering = new Ordering(new int[] {1, 0, 4, 3, 2});
-        BDD bdd = new BDD(at, ordering);
+        BDD bdd = new BDD(at, ordering, false);
         System.out.println(bdd.toDOT());
     }
 }

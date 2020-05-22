@@ -85,7 +85,7 @@ public class Entry implements Comparable<Entry> {
      * @param mapping, mapping of ID -> Attack Tree
      * @return array of BAS IDs that were completed
      */
-    private ArrayList<Integer> getCompleted(AttackTree[] mapping) {
+    public ArrayList<Integer> getCompleted(AttackTree[] mapping) {
         ArrayList<Integer> result = new ArrayList<>();
         for (AttackTree at: mapping) {
             if (at instanceof Leaf) {

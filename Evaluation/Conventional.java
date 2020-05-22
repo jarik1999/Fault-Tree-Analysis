@@ -41,7 +41,7 @@ public class Conventional {
 
     private static void evaluateConventional(AT at, int k) {
         long time = System.currentTimeMillis();
-        ArrayList<Entry> result = Algorithm.evaluate(at, k,false);
+        ArrayList<Entry> result = Algorithm.evaluate(at, k,false, false);
         time = System.currentTimeMillis() - time;
 
         System.out.println("--- Evaluation ---");

@@ -16,9 +16,13 @@ import java.util.HashMap;
 public class BDD {
     private Ordering ordering;
     private ITE bdd;
+    private Subsuming subsuming;
+    private boolean subsume;
 
-    public BDD(AT at, Ordering ordering) {
+    public BDD(AT at, Ordering ordering, boolean subsume) {
         this.ordering = ordering;
+        this.subsuming = new Subsuming(ordering);
+        this.subsume = subsume;
         this.bdd = createBDD(at.getAttackTree());
     }
 
@@ -45,11 +49,19 @@ public class BDD {
             );
         }
         Gate gate = (Gate) at;
+        ITE result;
         if (gate.type == Type.Sand || gate.type == Type.And) {
-            return AND(createBDD(gate.left), createBDD(gate.right));
+            result = AND(createBDD(gate.left), createBDD(gate.right));
         } else {
-            return OR(createBDD(gate.left), createBDD(gate.right));
+            result = OR(createBDD(gate.left), createBDD(gate.right));
         }
+
+        // Subsuming
+        if (subsume && (result instanceof Structure)) {
+            Structure temp = (Structure) result;
+            temp.left = subsuming.without(temp.left, temp.right);
+        }
+        return result;
     }
 
     /**

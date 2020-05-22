@@ -21,11 +21,11 @@ public class Algorithm {
      * @param prints, prints for AT-DOT, AT-UPPAAL, Variable ordering, and BDD-DOT.
      * @return results for the AT (results.size() <= K)
      */
-    public static ArrayList<Entry> evaluate(AT at, int k, boolean prints) {
+    public static ArrayList<Entry> evaluate(AT at, int k, boolean subsuming, boolean prints) {
         AttackTree[] mapping = at.getMapping();
 
         Ordering ordering = at.attackTreeOrdering();
-        BDD bdd = new BDD(at, ordering);
+        BDD bdd = new BDD(at, ordering, subsuming);
 
         if (prints) {
             System.out.println("--- Attack Tree DOT ---");
@@ -48,8 +48,8 @@ public class Algorithm {
      * @param prints, prints for AT-DOT, AT-UPPAAL, Variable ordering, and BDD-DOT.
      * @return results for the AT (results.size() <= K)
      */
-    public static ArrayList<Entry> evaluate(AT at, boolean prints) {
-        return evaluate(at, Integer.MAX_VALUE, prints);
+    public static ArrayList<Entry> evaluate(AT at, boolean subsuming, boolean prints) {
+        return evaluate(at, Integer.MAX_VALUE, subsuming, prints);
     }
 
 
