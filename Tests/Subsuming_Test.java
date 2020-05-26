@@ -6,6 +6,7 @@ import AttackTree.Ordering;
 import BDD.BDD;
 import Examples.AT_Examples;
 import Structures.Traversal.Entry;
+import Structures.Traversal.EntryOrdering;
 
 import java.util.ArrayList;
 
@@ -28,7 +29,7 @@ public class Subsuming_Test {
         long time = System.currentTimeMillis();
         Ordering ordering = at.attackTreeOrdering();
         BDD bdd = new BDD(at, ordering, subsuming);
-        ArrayList<Entry> result = Algorithm.evaluate(at, subsuming, false);
+        ArrayList<Entry> result = Algorithm.evaluate(at, EntryOrdering.cost, subsuming, false);
         time = System.currentTimeMillis() - time;
 
         System.out.println("--- ORDERING ---");

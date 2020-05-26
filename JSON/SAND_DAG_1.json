@@ -1,0 +1,103 @@
+{
+  "totalNodes": 14,
+  "nodes": [
+    {
+      "ID": 0,
+      "name": "a",
+      "type": "Leaf",
+      "cost": 1,
+      "time": 3
+    },
+    {
+      "ID": 1,
+      "name": "b",
+      "type": "Leaf",
+      "cost": 9,
+      "time": 5
+    },
+    {
+      "ID": 2,
+      "name": "c",
+      "type": "Leaf",
+      "cost": 3,
+      "time": 2
+    },
+    {
+      "ID": 3,
+      "name": "d",
+      "type": "Leaf",
+      "cost": 2,
+      "time": 5
+    },
+    {
+      "ID": 4,
+      "name": "e",
+      "type": "Leaf",
+      "cost": 1,
+      "time": 3
+    },
+    {
+      "ID": 5,
+      "name": "f",
+      "type": "Leaf",
+      "cost": 4,
+      "time": 4
+    },
+    {
+      "ID": 6,
+      "name": "g",
+      "type": "Leaf",
+      "cost": 2,
+      "time": 9
+    },
+    {
+      "ID": 7,
+      "name": "G1",
+      "type": "Or",
+      "left": 1,
+      "right": 2
+    },
+    {
+      "ID": 8,
+      "name": "G2",
+      "type": "And",
+      "left": 3,
+      "right": 4
+    },
+    {
+      "ID": 9,
+      "name": "G3",
+      "type": "Sand",
+      "left": 0,
+      "right": 7
+    },
+    {
+      "ID": 10,
+      "name": "G4",
+      "type": "Or",
+      "left": 7,
+      "right": 8
+    },
+    {
+      "ID": 11,
+      "name": "G5",
+      "type": "And",
+      "left": 9,
+      "right": 10
+    },
+    {
+      "ID": 12,
+      "name": "G6",
+      "type": "Sand",
+      "left": 5,
+      "right": 6
+    },
+    {
+      "ID": 13,
+      "name": "Or",
+      "type": "Or",
+      "left": 12,
+      "right": 11
+    }
+  ]
+}

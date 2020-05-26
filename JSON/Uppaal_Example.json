@@ -1,0 +1,138 @@
+{
+  "totalNodes": 19,
+  "nodes": [
+    {
+      "ID": 0,
+      "name": "bp",
+      "type": "Leaf",
+      "cost": 2000,
+      "time": 15
+    },
+    {
+      "ID": 1,
+      "name": "psc",
+      "type": "Leaf",
+      "cost": 0,
+      "time": 7
+    },
+    {
+      "ID": 2,
+      "name": "hh",
+      "type": "Leaf",
+      "cost": 1000,
+      "time": 20
+    },
+    {
+      "ID": 3,
+      "name": "sb",
+      "type": "Leaf",
+      "cost": 0,
+      "time": 0
+    },
+    {
+      "ID": 4,
+      "name": "heb",
+      "type": "Leaf",
+      "cost": 0,
+      "time": 3
+    },
+    {
+      "ID": 5,
+      "name": "hr",
+      "type": "Leaf",
+      "cost": 4000,
+      "time": 10
+    },
+    {
+      "ID": 6,
+      "name": "reb",
+      "type": "Leaf",
+      "cost": 500,
+      "time": 3
+    },
+    {
+      "ID": 7,
+      "name": "rfc",
+      "type": "Leaf",
+      "cost": 0,
+      "time": 0
+    },
+    {
+      "ID": 8,
+      "name": "icp",
+      "type": "Leaf",
+      "cost": 2000,
+      "time": 15
+    },
+    {
+      "ID": 9,
+      "name": "dtm",
+      "type": "Leaf",
+      "cost": 1000,
+      "time": 5
+    },
+    {
+      "ID": 10,
+      "name": "PR1",
+      "type": "Sand",
+      "left": 5,
+      "right": 6
+    },
+    {
+      "ID": 11,
+      "name": "PR",
+      "type": "Sand",
+      "left": 10,
+      "right": 7
+    },
+    {
+      "ID": 12,
+      "name": "NA1",
+      "type": "Sand",
+      "left": 2,
+      "right": 3
+    },
+    {
+      "ID": 13,
+      "name": "NA",
+      "type": "Sand",
+      "left": 4,
+      "right": 12
+    },
+    {
+      "ID": 14,
+      "name": "BR",
+      "type": "Sand",
+      "left": 0,
+      "right": 1
+    },
+    {
+      "ID": 15,
+      "name": "SC1",
+      "type": "Or",
+      "left": 13,
+      "right": 14
+    },
+    {
+      "ID": 16,
+      "name": "SC",
+      "type": "Or",
+      "left": 11,
+      "right": 15
+    },
+    {
+      "ID": 17,
+      "name": "FS1",
+      "type": "Sand",
+      "left": 16,
+      "right": 8
+    },
+    {
+      "ID": 18,
+      "name": "FSW",
+      "type": "Sand",
+      "left": 17,
+      "right": 9
+    }
+  ]
+}

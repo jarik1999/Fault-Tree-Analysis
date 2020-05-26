@@ -8,6 +8,7 @@ import Structures.BDD.Structure;
 import Structures.BDD.Value;
 import Structures.Traversal.Entry;
 import AttackTree.Ordering;
+import Structures.Traversal.EntryOrdering;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +22,7 @@ public class Algorithm {
      * @param prints, prints for AT-DOT, AT-UPPAAL, Variable ordering, and BDD-DOT.
      * @return results for the AT (results.size() <= K)
      */
-    public static ArrayList<Entry> evaluate(AT at, int k, boolean subsuming, boolean prints) {
+    public static ArrayList<Entry> evaluate(AT at, EntryOrdering eo, int k, boolean subsuming, boolean prints) {
         AttackTree[] mapping = at.getMapping();
 
         Ordering ordering = at.attackTreeOrdering();
@@ -39,7 +40,7 @@ public class Algorithm {
             System.out.println(bdd.toDOT());
         }
 
-        return evaluate(bdd, mapping, k);
+        return evaluate(bdd, mapping, eo, k);
     }
 
     /**
@@ -48,8 +49,8 @@ public class Algorithm {
      * @param prints, prints for AT-DOT, AT-UPPAAL, Variable ordering, and BDD-DOT.
      * @return results for the AT (results.size() <= K)
      */
-    public static ArrayList<Entry> evaluate(AT at, boolean subsuming, boolean prints) {
-        return evaluate(at, Integer.MAX_VALUE, subsuming, prints);
+    public static ArrayList<Entry> evaluate(AT at, EntryOrdering eo, boolean subsuming, boolean prints) {
+        return evaluate(at, eo, Integer.MAX_VALUE, subsuming, prints);
     }
 
 
@@ -60,7 +61,7 @@ public class Algorithm {
      * @param k, maximum number of results (to determine top-K)
      * @return possible cut sets
      */
-    private static ArrayList<Entry> evaluate(BDD bdd, AttackTree[] mapping, int k) {
+    private static ArrayList<Entry> evaluate(BDD bdd, AttackTree[] mapping, EntryOrdering eo, int k) {
         ArrayList<Entry> result = new ArrayList<>();
         PriorityQueue<Entry> pq = new PriorityQueue<>();
 
@@ -68,7 +69,7 @@ public class Algorithm {
         int n = mapping.length;
         int[] X = new int[n];
         Arrays.fill(X, -1);
-        Entry entry = new Entry(0, 0, bdd.getITE(), X);
+        Entry entry = new Entry(eo, 0, 0, bdd.getITE(), X);
         pq.add(entry);
 
         while (!pq.isEmpty() && result.size() < k) {

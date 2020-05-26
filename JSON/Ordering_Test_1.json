@@ -1,0 +1,68 @@
+{
+  "totalNodes": 9,
+  "nodes": [
+    {
+      "ID": 0,
+      "name": "a",
+      "type": "Leaf",
+      "cost": 1,
+      "time": 3
+    },
+    {
+      "ID": 1,
+      "name": "b",
+      "type": "Leaf",
+      "cost": 1,
+      "time": 4
+    },
+    {
+      "ID": 2,
+      "name": "c",
+      "type": "Leaf",
+      "cost": 1,
+      "time": 2
+    },
+    {
+      "ID": 3,
+      "name": "d",
+      "type": "Leaf",
+      "cost": 1,
+      "time": 1
+    },
+    {
+      "ID": 4,
+      "name": "e",
+      "type": "Leaf",
+      "cost": 1,
+      "time": 5
+    },
+    {
+      "ID": 5,
+      "name": "G1",
+      "type": "Sand",
+      "left": 0,
+      "right": 1
+    },
+    {
+      "ID": 6,
+      "name": "G2",
+      "type": "Sand",
+      "left": 5,
+      "right": 2
+    },
+    {
+      "ID": 7,
+      "name": "G3",
+      "type": "Sand",
+      "left": 3,
+      "right": 4
+    },
+    {
+      "ID": 8,
+      "name": "Top",
+      "type": "And",
+      "left": 6,
+      "right": 7
+    }
+  ]
+}

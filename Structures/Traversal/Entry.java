@@ -11,8 +11,13 @@ import java.util.ArrayList;
 /**
  * Entry is used in the traversal of the BDD. It contains the location in the BDD, time & cost. When it reaches a 1-node
  * we it contains a valid CS for the AT.
+ *
+ * Notes:
+ * - If not sorted on time, it doesn't calculate time during traversal. This is because it is n^2 while cost is n. Thus,
+ * it is more efficient to calculate time once in n after traversal using getTime().
  */
 public class Entry implements Comparable<Entry> {
+    public EntryOrdering eo;
     public int cost;
     public int time;
     public ITE gate;
@@ -27,7 +32,8 @@ public class Entry implements Comparable<Entry> {
      * @param gate, current gate location in the BDD
      * @param X, X[ID] = time spent on the node. -1 if not executed.
      */
-    public Entry(int cost, int time, ITE gate, int[] X) {//, ArrayList<Integer> completed) {
+    public Entry(EntryOrdering eo, int cost, int time, ITE gate, int[] X) {//, ArrayList<Integer> completed) {
+        this.eo = eo;
         this.cost = cost;
         this.time = time;
         this.gate = gate;
@@ -41,13 +47,51 @@ public class Entry implements Comparable<Entry> {
      * @param mapping, mapping of ID -> AttackTree
      */
     public void completeBAS(int ID, AttackTree[] mapping) {
-        //completed.add(ID);
-
         Leaf leaf = (Leaf) mapping[ID];
 
         // Update time / cost of leaf
         this.cost += leaf.cost;
         X[ID] = leaf.time;
+
+        if (eo == EntryOrdering.time) {
+            this.time = Math.max(time, X[ID]);
+            updateTime(leaf);
+        }
+    }
+
+    private void updateTime(AttackTree node) {
+        //System.out.println("Checking: " + node.getID() + " - " + node.getParents().size());
+        for (Gate parent: node.getParents()) {
+            int ID = parent.getID();
+            int leftID = parent.left.getID() ;
+            int rightID = parent.right.getID();
+            int time = -1;
+
+            // Skip if parent not completed yet
+            if (parent.type == Type.Sand || parent.type == Type.And) {
+                if (X[leftID] == UNCOMPLETED || X[rightID] == UNCOMPLETED) continue;
+            } else {
+                if (X[leftID] == UNCOMPLETED && X[rightID] == UNCOMPLETED) continue;
+            }
+
+            if (parent.type == Type.Sand) time = X[leftID] + X[rightID];
+            if (parent.type == Type.And) time = Math.max(X[leftID], X[rightID]);
+            if (parent.type == Type.Or) {
+                if (X[leftID] != UNCOMPLETED && X[rightID] != UNCOMPLETED) time = Math.min(X[leftID], X[rightID]);
+                else time = Math.max(X[leftID], X[rightID]);
+            }
+
+
+            if (time != X[ID]) {
+               // System.out.println("Keep traversing");
+                //System.out.println(parent.getParents().size());
+                //if (parent.getParents().size() > 0) System.out.println(parent.getParents().get(0).getID());
+                X[ID] = time;
+                this.time = Math.max(this.time, X[ID]);
+                updateTime(parent);
+            }
+
+        }
     }
 
     /**
@@ -102,7 +146,13 @@ public class Entry implements Comparable<Entry> {
      * @return compare result similar to Integer.compare (-1, 0, 1)
      */
     public int compareTo(Entry e) {
-        return Integer.compare(this.cost, e.cost);
+        if (eo == EntryOrdering.cost) {
+            return Integer.compare(this.cost, e.cost);
+        } else if (eo == EntryOrdering.time) {
+            return Integer.compare(this.time, e.time);
+        } else {
+            throw new RuntimeException("Unknown ordering");
+        }
     }
 
     /**
@@ -115,9 +165,9 @@ public class Entry implements Comparable<Entry> {
 
     /**
      * Creates a copy of the Entry
-     * @return
+     * @return copy of the entry
      */
     public Entry copy() {
-        return new Entry(cost, time, gate, X.clone());//, new ArrayList<>(completed));
+        return new Entry(eo, cost, time, gate, X.clone());
     }
 }

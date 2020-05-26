@@ -8,8 +8,11 @@ import Structures.AttackTree.Gate;
 import Structures.AttackTree.Type;
 import Structures.BDD.Structure;
 import Structures.Traversal.Entry;
+import Structures.Traversal.EntryOrdering;
 
 import java.util.ArrayList;
+
+import static Evaluation.Helpers.combine;
 
 public class Conventional {
     public static void main(String[] args) {
@@ -26,22 +29,14 @@ public class Conventional {
     private static void evaluateDoubling(int count, AT at) {
         if (count == 0) return;
         evaluateConventional(at, 1);
-        evaluateDoubling(--count, combine(at, AT_Examples.getAttackTree5()));
+        evaluateDoubling(--count, combine(at, AT_Examples.getAttackTree5(), Type.Or));
     }
 
-    private static AT combine(AT x, AT y) {
-        int n = x.getTotalNodes(x.getAttackTree());
-        int m = x.getTotalNodes(y.getAttackTree());
 
-        y.incrementIDs(n);
-
-        AttackTree at = new Gate(n + m, "Combine", Type.Or, x.getAttackTree(), y.getAttackTree());
-        return new AT(at);
-    }
 
     private static void evaluateConventional(AT at, int k) {
         long time = System.currentTimeMillis();
-        ArrayList<Entry> result = Algorithm.evaluate(at, k,false, false);
+        ArrayList<Entry> result = Algorithm.evaluate(at, EntryOrdering.time,  k,false, false);
         time = System.currentTimeMillis() - time;
 
         System.out.println("--- Evaluation ---");
@@ -49,5 +44,7 @@ public class Conventional {
         System.out.println("Time: " + time);
         System.out.println("Min cost: " + result.get(0).cost);
         System.out.println("Total: " + result.size());
+        System.out.println("Times: ");
+        for (Entry e: result) System.out.println(e.time);
     }
 }

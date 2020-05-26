@@ -19,7 +19,7 @@ public class Subsuming {
 
     // Figure 5 from the paper
     public ITE without(ITE F, ITE G) {
-        System.out.println("SUBSUMING: " + F.toString() + " - " + G.toString());
+        //System.out.println("SUBSUMING: " + F.toString() + " - " + G.toString());
         // F = 0 => 0
         if (F instanceof Value && !((Value) F).x) return F;
         // G = 1 => 0
