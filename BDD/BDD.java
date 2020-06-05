@@ -49,19 +49,32 @@ public class BDD {
             );
         }
         Gate gate = (Gate) at;
-        ITE result;
+        ITE left = createBDD(gate.left);
+        ITE right = createBDD(gate.right);
+        if (subsume) {
+            left = subsuming.without(left, right);
+        }
         if (gate.type == Type.Sand || gate.type == Type.And) {
-            result = AND(createBDD(gate.left), createBDD(gate.right));
+            return AND(left, right);
         } else {
-            result = OR(createBDD(gate.left), createBDD(gate.right));
+            return OR(left, right);
         }
 
-        // Subsuming
-        if (subsume && (result instanceof Structure)) {
-            Structure temp = (Structure) result;
-            temp.left = subsuming.without(temp.left, temp.right);
-        }
-        return result;
+
+//        Gate gate = (Gate) at;
+//        ITE result;
+//        if (gate.type == Type.Sand || gate.type == Type.And) {
+//            result = AND(createBDD(gate.left), createBDD(gate.right));
+//        } else {
+//            result = OR(createBDD(gate.left), createBDD(gate.right));
+//        }
+//
+//        // Subsuming
+//        if (subsume && (result instanceof Structure)) {
+//            Structure temp = (Structure) result;
+//            temp.left = subsuming.without(temp.left, temp.right);
+//        }
+//        return result;
     }
 
     /**

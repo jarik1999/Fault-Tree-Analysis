@@ -30,7 +30,9 @@ public class Subsuming {
         if (F instanceof Value && ((Value) F).x) return F;
         // ({F, G}, R) contained => R
         TableEntry entry = new TableEntry(F, G);
-        if (without.containsKey(entry)) return without.get(entry);
+        if (without.containsKey(entry)) {
+            return without.get(entry);
+        }
 
         Structure F_ITE = (Structure) F;
         Structure G_ITE = (Structure) G;

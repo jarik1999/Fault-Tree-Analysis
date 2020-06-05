@@ -8,7 +8,7 @@ import AttackTree.AT;
 
 public class BDD_Test {
     public static void main(String[] args) {
-        AT at = AT_Examples.getAttackTree3();
+        AT at = AT_Examples.openJSON("Paper_Figure_3.json");
 
         System.out.println(at.toDOT());
         System.out.println("----");

@@ -6,7 +6,7 @@
       "name": "a",
       "type": "Leaf",
       "cost": 1,
-      "time": 2
+      "time": 1
     },
     {
       "ID": 1,
@@ -20,7 +20,7 @@
       "name": "c",
       "type": "Leaf",
       "cost": 1,
-      "time": 2
+      "time": 1
     },
     {
       "ID": 3,

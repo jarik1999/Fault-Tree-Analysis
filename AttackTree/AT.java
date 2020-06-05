@@ -1,5 +1,6 @@
 package AttackTree;
 
+import Examples.AT_Examples;
 import Structures.AttackTree.AttackTree;
 import Structures.AttackTree.Gate;
 import Structures.AttackTree.Leaf;
@@ -11,8 +12,11 @@ import java.util.stream.Collectors;
 
 public class AT {
     private AttackTree at;
-    public AT(AttackTree at) {
+    private String name;
+
+    public AT(String name, AttackTree at) {
         this.at = at;
+        this.name = name;
     }
 
     /**
@@ -289,6 +293,7 @@ public class AT {
      * @return copy of the Attack Tree
      */
     public AT copy() {
-        return new AT(at.copy());
+        return AT_Examples.openJSON(name);
+        //return new AT(at.copy()); -  Did not work for DAGs
     }
 }

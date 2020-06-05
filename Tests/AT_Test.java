@@ -7,7 +7,7 @@ import Examples.AT_Examples;
 
 public class AT_Test {
     public static void main(String[] args) {
-        AT at = AT_Examples.getAttackTree5();
+        AT at = AT_Examples.openJSON("Uppaal_Example.json");
         System.out.println(at.toDOT());
         System.out.println(at.toUPPAAL());
 

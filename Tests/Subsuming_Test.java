@@ -12,10 +12,8 @@ import java.util.ArrayList;
 
 public class Subsuming_Test {
     public static void main(String[] args) {
-        // Figure 1
-        //test(AT_Examples.getAttackTree1());
         // Figure 3
-        test(AT_Examples.getAttackTree3());
+        test(AT_Examples.openJSON("Paper_Figure_1.json"));
     }
 
     private static void test(AT at) {
