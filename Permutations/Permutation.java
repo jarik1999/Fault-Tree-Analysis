@@ -1,5 +1,7 @@
 package Permutations;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
@@ -11,10 +13,14 @@ public class Permutation {
      * TODO implement wrapping class to calculate permutations for sets
      */
 
-    private int[] x;
+    private ArrayList<Integer> x;
 
-    public Permutation(int[] BASs) {
-        this.x = BASs;
+    public Permutation(ArrayList<Integer > x) {
+        this.x = x;
+    }
+
+    public ArrayList<Integer> getPermutation(int k) {
+        return getPermutation(new BigInteger("" + k));
     }
 
     /**
@@ -22,39 +28,41 @@ public class Permutation {
      * @param k, permutation number
      * @return permutation
      */
-    public Permutation getPermutation(int k) {
-        Stack<Integer> stack = new Stack<>();
+    public ArrayList<Integer> getPermutation(BigInteger k) {
+        ArrayList<Integer> result = new ArrayList<>();
         LinkedList<Integer> next = new LinkedList<>();
         for (int i: x) next.addLast(i);
-        getPermutation(k, next, stack);
-
-        int[] result = new int[x.length];
-        for (int i = 0; i < x.length; i++) {
-            result[x.length - 1 - i] = stack.pop();
-        }
-        return new Permutation(result);
+        getPermutation(k, next, result);
+        return result;
     }
 
-    private void getPermutation(int k, LinkedList<Integer> next, Stack<Integer> stack) {
+    public BigInteger getTotalPermutations() {
+        return fact(x.size());
+    }
+
+    private void getPermutation(BigInteger k, LinkedList<Integer> next, ArrayList<Integer> result) {
         Iterator<Integer> iterator = next.listIterator();
         int n = next.size();
         for (int i = 0; i < n; i++) {
             int x = iterator.next();
-            int start = i * fact(n - 1);
-            int end = (i + 1) * fact(n - 1);
-            if (start <= k && k < end) {
+            BigInteger start = fact(n - 1).multiply(new BigInteger("" + i));
+            BigInteger end = fact(n - 1).multiply(new BigInteger("" + (i + 1)));
+            if (k.compareTo(end) < 0) {
                 iterator.remove();
-                stack.add(x);
-                getPermutation(k - start, next, stack);
+                result.add(x);
+                getPermutation(k.subtract(start), next, result);
                 return;
             }
         }
     }
 
-    private int fact(int k) {
-        if (k == 0 || k == 1) return 1;
-        return k * fact(k-1);
+    private BigInteger fact(int k) {
+        BigInteger res = BigInteger.ONE;
+        for (int i = 2; i <= k; i++) res = res.multiply(new BigInteger("" + i));
+        return res;
     }
+
+
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -63,7 +71,8 @@ public class Permutation {
     }
 
     public static void main(String[] args) {
-        Permutation perm = new Permutation(new int[] {0, 1, 2, 3});
+        ArrayList<Integer> a = new ArrayList<>(){{add(0);add(1);add(2);add(3);}};
+        Permutation perm = new Permutation(a);
 
         for (int i = 0; i < 24; i++) {
             System.out.println(perm.getPermutation(i).toString());

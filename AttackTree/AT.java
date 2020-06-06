@@ -181,17 +181,20 @@ public class AT {
 
         // Create a graph where topo[i] contains the out edges of i
         // If there is an out_edge it means x < y
-        ArrayList<Integer>[] topo = new ArrayList[totalBAS];
-        for (int i = 0; i < totalBAS; i++) topo[i] = new ArrayList<>();
-        traverse(at, topo, new ArrayList<>());
+//        ArrayList<Integer>[] topo = new ArrayList[totalBAS];
+//        for (int i = 0; i < totalBAS; i++) topo[i] = new ArrayList<>();
+//        traverse(at, topo, new ArrayList<>());
+
+        ArrayList<Integer>[] topo = getOrderingDAG();
+        int[] in_degree = getIndegree(topo);
 
         // Get the in_degree of each BAS.
-        int[] in_degree = new int[totalBAS];
-        for (int i = 0; i < totalBAS; i++) {
-            for (int node: topo[i]) {
-                in_degree[node]++;
-            }
-        }
+//        int[] in_degree = new int[totalBAS];
+//        for (int i = 0; i < totalBAS; i++) {
+//            for (int node: topo[i]) {
+//                in_degree[node]++;
+//            }
+//        }
 
         // BAS with in_degree zero can be first
         int index = 0;
@@ -211,7 +214,83 @@ public class AT {
             }
         }
 
+        // Test whether ordering was indeed a DAG
+        for (int i = 0; i < totalBAS; i++) {
+            if (in_degree[i] > 0) {
+                throw new RuntimeException("Found cyclic ordering dependencies");
+            }
+        }
+
         return new Ordering(ordering);
+    }
+
+    /**
+     * Get the topology sets for the ordering. Used to find additional ordering solutions.
+     * @return topology ordering sets
+     */
+    public ArrayList<ArrayList<Integer>> getTopologySets() {
+        int totalBAS = getTotalBAS(at);
+        ArrayList<ArrayList<Integer>> result = new ArrayList<>();
+        boolean[] visited = new boolean[totalBAS];
+
+        ArrayList<Integer>[] topo = getOrderingDAG();
+        int[] in_degree = getIndegree(topo);
+
+        boolean change = true;
+        int added = 0;
+        while (change) {
+            change = false;
+            ArrayList<Integer> set = new ArrayList<>();
+            for (int i = 0; i < totalBAS; i++) {
+                if (in_degree[i] == 0 && !visited[i]) {
+                    set.add(i);
+                    added += 1;
+                    visited[i] = true;
+                    change = true;
+                }
+            }
+            for (int i: set) {
+                for (int j: topo[i]) {
+                    in_degree[j]--;
+                }
+            }
+            if (change) result.add(set);
+        }
+
+        if (added < totalBAS) {
+            throw new RuntimeException("Found cyclic ordering dependencies");
+        }
+
+        return result;
+    }
+
+    public ArrayList<ArrayList<Integer>> getSolutionSets(ArrayList<ArrayList<Integer>> topologySets, ArrayList<Integer> solutions) {
+        return null;
+    }
+
+    private ArrayList<Integer>[] getOrderingDAG() {
+        int totalBAS = getTotalBAS(at);
+
+        // Create a graph where topo[i] contains the out edges of i
+        // If there is an out_edge it means x < y
+        ArrayList<Integer>[] topo = new ArrayList[totalBAS];
+        for (int i = 0; i < totalBAS; i++) topo[i] = new ArrayList<>();
+        traverse(at, topo, new ArrayList<>());
+
+        return topo;
+    }
+
+    private int[] getIndegree(ArrayList<Integer>[] topo) {
+        int totalBAS = getTotalBAS(at);
+
+        int[] in_degree = new int[totalBAS];
+        for (int i = 0; i < totalBAS; i++) {
+            for (int node: topo[i]) {
+                in_degree[node]++;
+            }
+        }
+
+        return in_degree;
     }
 
     /**
@@ -289,7 +368,7 @@ public class AT {
     }
 
     /**
-     * Create a copy of the Attack Tree
+     * Create a copy of the Attack Tree from the original JSON.
      * @return copy of the Attack Tree
      */
     public AT copy() {
