@@ -126,6 +126,7 @@ public class Entry implements Comparable<Entry> {
 
     /**
      * Get the completed BASs for the Entry. Checks each of the Leaf nodes to see whether time was spent on them.
+     * Note: These are not necessarily in the correct order.
      * @param mapping, mapping of ID -> Attack Tree
      * @return array of BAS IDs that were completed
      */

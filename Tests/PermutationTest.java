@@ -1,9 +1,12 @@
 package Tests;
 
+import Algorithms.Algorithm;
 import AttackTree.AT;
 import Examples.AT_Examples;
 import Permutations.Permutations;
 import Structures.AttackTree.AttackTree;
+import Structures.Traversal.Entry;
+import Structures.Traversal.EntryOrdering;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.math.BigInteger;
@@ -46,16 +49,40 @@ public class PermutationTest {
 
     @Test
     public void testTopologySets() {
-        // TODO get solutions from Uppaal or other AT
-        // TODO get other orderings from solution
-        // TODO test amount of orderings
-        // TODO test correctness of other orderings
+        testTopologySetsUppaal();
+        testTopologySetsFigure1();
+        testTopologySetsFigure3();
 
+
+    }
+
+    private void testTopologySetsUppaal() {
+        // In the subsumed Uppaal tree, ech solution has only one possible ordering
         AT uppaal = AT_Examples.openJSON("Uppaal_Example.json");
-        AttackTree[] mapping = uppaal.getMapping();
-        for (ArrayList<Integer> a: uppaal.getTopologySets()) {
-            System.out.println("---");
-            for (int i: a) System.out.println(mapping[i].getName());
+        testTopologyOrderings(uppaal, new int[] {1, 1, 1});
+    }
+
+    private void testTopologySetsFigure1() {
+        // In the subsumed Figure 1 tree, we have solution of size 1, 2, 2. No sand gates so 1!, 2!, 2! orderings
+        AT figure1 = AT_Examples.openJSON("Paper_Figure_1.json");
+        testTopologyOrderings(figure1, new int[] {1, 2, 2});
+    }
+
+    private void testTopologySetsFigure3() {
+        // In the subsumed Figure 3 tree, we have solutions of size 2, 2, 2, 2. No sand gates so 2!, 2!, 2!, 2!
+        AT at = AT_Examples.openJSON("Paper_Figure_3.json");
+        testTopologyOrderings(at, new int[] {2, 2, 2, 2});
+    }
+
+    private void testTopologyOrderings(AT at, int[] totalOrderings) {
+        AttackTree[] mapping = at.getMapping();
+        ArrayList<ArrayList<Integer>> topologySets = at.getTopologySets();
+        ArrayList<Entry> solutions = Algorithm.evaluate(at, EntryOrdering.time, true, false);
+        assert(solutions.size() == totalOrderings.length);
+        for (int i = 0; i < totalOrderings.length; i++) {
+            ArrayList<Integer> bas = solutions.get(i).getCompleted(mapping);
+            Permutations permutations = new Permutations(at.getSolutionSets(topologySets, bas));
+            assert(permutations.getTotalPermutations().intValue() == totalOrderings[i]);
         }
     }
 

@@ -7,6 +7,8 @@ public class Permutations {
     private int n;
     private Permutation[] permutations;
     // dp[i] indicates amount of permutations from sets with index > i
+    // similar approach of base 10 -> base 2 conversion. However, here each number has a different base,
+    // so we use this array
     private BigInteger[] dp;
     private BigInteger total;
 

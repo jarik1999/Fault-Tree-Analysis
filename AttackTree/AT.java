@@ -7,6 +7,7 @@ import Structures.AttackTree.Leaf;
 import Structures.AttackTree.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
@@ -264,8 +265,39 @@ public class AT {
         return result;
     }
 
-    public ArrayList<ArrayList<Integer>> getSolutionSets(ArrayList<ArrayList<Integer>> topologySets, ArrayList<Integer> solutions) {
-        return null;
+    /**
+     * Create the topology sets for a certain solution. These can be used to create the additional orderings for
+     * solutions.
+     * @param topologySets, topology sets create by the topological sort
+     * @param solution, solution for the AT
+     * @return topology sets for the solution
+     */
+    public ArrayList<ArrayList<Integer>> getSolutionSets(ArrayList<ArrayList<Integer>> topologySets, ArrayList<Integer> solution) {
+        // Create mapping of BAS -> Set
+        HashMap<Integer, Integer> setMapping = new HashMap<>();
+        for (int i = 0; i < topologySets.size(); i++) {
+            for (int j = 0; j < topologySets.get(i).size(); j++) {
+                setMapping.put(topologySets.get(i).get(j), i);
+            }
+        }
+
+        // Create solution sets
+        ArrayList<ArrayList<Integer>> sets = new ArrayList<>();
+        for (int i = 0; i < topologySets.size(); i++) sets.add(new ArrayList<>());
+        for (int bas: solution) {
+            int set = setMapping.get(bas);
+            sets.get(set).add(bas);
+        }
+
+        // Create result
+        ArrayList<ArrayList<Integer>> result = new ArrayList<>();
+        for (int i = 0; i < topologySets.size(); i++) {
+            if (sets.get(i).size() > 0) {
+                result.add(sets.get(i));
+            }
+        }
+
+        return result;
     }
 
     private ArrayList<Integer>[] getOrderingDAG() {
