@@ -5,6 +5,13 @@ import Structures.AttackTree.Gate;
 import Structures.AttackTree.Type;
 
 class Helpers {
+    /**
+     * Combine two ATs. Increases the IDs in the second AT before combing with the specified gate.
+     * @param x, first AT
+     * @param y, second AT
+     * @param type, gate to combine ATs with
+     * @return single combined AT
+     */
     static AT combine(AT x, AT y, Type type) {
         int n = x.getTotalNodes(x.getAttackTree());
         int m = x.getTotalNodes(y.getAttackTree());

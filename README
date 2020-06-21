@@ -1,0 +1,36 @@
+Uses the JSON-Simple library:
+- Can be downloaded from http://www.java2s.com/Code/Jar/j/Downloadjsonsimple11jar.htm
+- Take the Jar and add it as a library to the project
+
+Uses JUnit 5.3 as a testing library.
+- Intellij is able to add this to the class path using Maven when using 'alt + enter' on the unknown @Test
+- For uses such as AT, BDD, Algorithm or Evaluation, this library is not required.
+
+Algorithms:
+- Algorithm: Contains the Algorithm implementation
+
+AttackTree:
+- AT: AT representation
+- Ordering: Ordering of BASs
+
+BDD:
+- BDD: BDD representation and construction from AT
+- Subsuming: Subsuming implementation
+
+Examples:
+- ATExamples: Loads AT examples from JSON
+
+JSON:
+- Contains AT examples from literature or for testing in JSON format
+
+Permutations:
+- Permutation: Class to obtain permutations of a single set of BASs
+- Permutations: Used to obtain permutations of an attack
+
+Structures:
+- AttackTree: Structure classes for the AT representation
+- BDD: Structures classes for the BDD representation
+- Traversal: Structure classes for the BDD traversal
+
+Tests:
+- PermutationTest: Tests permutation class

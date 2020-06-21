@@ -7,19 +7,25 @@ import Structures.BDD.Value;
 
 import java.util.HashMap;
 
-public class Subsuming {
+class Subsuming {
 
     private Ordering ordering;
     private HashMap<TableEntry, ITE> without;
 
-    public Subsuming(Ordering ordering) {
+    Subsuming(Ordering ordering) {
         this.without = new HashMap<>();
         this.ordering = ordering;
     }
 
     // Figure 5 from the paper
-    public ITE without(ITE F, ITE G) {
-        //System.out.println("SUBSUMING: " + F.toString() + " - " + G.toString());
+
+    /**
+     * Perform the subsuming operation by computing F\G
+     * @param F, Left subtree ITE structure
+     * @param G, Right subtree ITE structure
+     * @return ITE structure to which subsuming is applied
+     */
+    ITE without(ITE F, ITE G) {
         // F = 0 => 0
         if (F instanceof Value && !((Value) F).x) return F;
         // G = 1 => 0
@@ -64,6 +70,9 @@ public class Subsuming {
     }
 
 
+    /**
+     * Table entry for (F, G)
+     */
     private class TableEntry {
 
         private String F;

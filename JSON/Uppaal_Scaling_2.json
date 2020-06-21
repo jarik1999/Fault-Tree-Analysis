@@ -1,0 +1,26 @@
+{
+  "totalNodes" : 3,
+  "nodes" : [
+    {
+      "ID": 0,
+      "name": "a",
+      "type": "Leaf",
+      "cost": 2,
+      "time": 3
+    },
+    {
+      "ID": 1,
+      "name": "b",
+      "type": "Leaf",
+      "cost": 3,
+      "time": 2
+    },
+    {
+      "ID": 2,
+      "name": "TOP",
+      "type": "Or",
+      "left": 0,
+      "right": 1
+    }
+  ]
+}

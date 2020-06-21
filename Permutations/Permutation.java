@@ -4,21 +4,20 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Stack;
 
 public class Permutation {
-    /**
-     * TODO optimize by storing n! for important n
-     * TODO to support larger sets of BAS create a function k < n! function(k, n) that tries to evaluate without calculating n completely
-     * TODO implement wrapping class to calculate permutations for sets
-     */
 
     private ArrayList<Integer> x;
 
-    public Permutation(ArrayList<Integer > x) {
+    Permutation(ArrayList<Integer> x) {
         this.x = x;
     }
 
+    /**
+     * Get the k'th permutation where 0 is the input permutation
+     * @param k, permutation number
+     * @return permutation
+     */
     public ArrayList<Integer> getPermutation(int k) {
         return getPermutation(new BigInteger("" + k));
     }
@@ -36,10 +35,20 @@ public class Permutation {
         return result;
     }
 
+    /**
+     * Calculate the total amount of permutations of the set
+     * @return
+     */
     public BigInteger getTotalPermutations() {
         return fact(x.size());
     }
 
+    /**
+     * Get the k'th permutation where 0 is the input permutation
+     * @param k, permutation number
+     * @param next, BASs left to consider
+     * @param result, current result of the ordering containing BASs
+     */
     private void getPermutation(BigInteger k, LinkedList<Integer> next, ArrayList<Integer> result) {
         Iterator<Integer> iterator = next.listIterator();
         int n = next.size();
@@ -56,26 +65,24 @@ public class Permutation {
         }
     }
 
+    /**
+     * Calculate k!
+     * @param k, factorial
+     * @return k!
+     */
     private BigInteger fact(int k) {
         BigInteger res = BigInteger.ONE;
         for (int i = 2; i <= k; i++) res = res.multiply(new BigInteger("" + i));
         return res;
     }
 
-
-
+    /**
+     * Create string version of the permutation group
+     * @return BASs ','-separated
+     */
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (int i : x) sb.append(i).append(',');
         return sb.toString();
-    }
-
-    public static void main(String[] args) {
-        ArrayList<Integer> a = new ArrayList<>(){{add(0);add(1);add(2);add(3);}};
-        Permutation perm = new Permutation(a);
-
-        for (int i = 0; i < 24; i++) {
-            System.out.println(perm.getPermutation(i).toString());
-        }
     }
 }

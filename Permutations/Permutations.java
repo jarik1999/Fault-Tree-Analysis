@@ -24,6 +24,10 @@ public class Permutations {
         updateTotalPermutations();
     }
 
+    /**
+     * Create the dp array, and calculate the total amount of permutations. The dp array is used to obtain the
+     * amount of permutations in certain sets in O(1). dp[i] contains permutations in sets with index > i combined.
+     */
     private void updateTotalPermutations() {
         dp = new BigInteger[n];
         dp[n - 1] = BigInteger.ONE;
@@ -33,10 +37,20 @@ public class Permutations {
         total = dp[0].multiply(permutations[0].getTotalPermutations());
     }
 
+    /**
+     * Get the k'th permutations of the attack
+     * @param k, permutation number
+     * @return k'th permutation
+     */
     public ArrayList<Integer> getPermutation(int k) {
         return getPermutation(new BigInteger("" + k));
     }
 
+    /**
+     * Get the k'th permutations of the attack
+     * @param k, permutation number
+     * @return k'th permutation
+     */
     public ArrayList<Integer> getPermutation(BigInteger k) {
         ArrayList<Integer> result = new ArrayList<>();
         if (k.compareTo(total) >= 0) return null;
@@ -49,6 +63,10 @@ public class Permutations {
         return result;
     }
 
+    /**
+     * Get the total amount of permutations of the attack
+     * @return total permutations
+     */
     public BigInteger getTotalPermutations() {
         return total;
     }

@@ -35,7 +35,8 @@ public class BDD {
     }
 
     /**
-     * Creates a BDD from a Attack Tree using formulae specified in 'A Fast BDD...' paper
+     * Creates a BDD from a Attack Tree using formulae specified in paper. Performs the subsuming operation
+     * if specified in the constructor.
      * @param at, the Attack Tree
      * @return BDD using ITE structure
      */
@@ -59,27 +60,12 @@ public class BDD {
         } else {
             return OR(left, right);
         }
-
-
-//        Gate gate = (Gate) at;
-//        ITE result;
-//        if (gate.type == Type.Sand || gate.type == Type.And) {
-//            result = AND(createBDD(gate.left), createBDD(gate.right));
-//        } else {
-//            result = OR(createBDD(gate.left), createBDD(gate.right));
-//        }
-//
-//        // Subsuming
-//        if (subsume && (result instanceof Structure)) {
-//            Structure temp = (Structure) result;
-//            temp.left = subsuming.without(temp.left, temp.right);
-//        }
-//        return result;
     }
 
     /**
      * Create a DOT from the BDD
-     * @return
+     * @return DOT graph string representation. Multiple sites such as http://www.webgraphviz.com/ exist to
+     * interpret these results.
      */
     public String toDOT() {
 
@@ -132,20 +118,21 @@ public class BDD {
     }
 
     /**
-     * ITE - ITE : combine using equations 9 & 11
-     * Bool - ITE : return bool ? ITE : 0
-     * Bool - Bool : return bool & bool
+     * Combine two ITE structures with an AND gate
      *
-     * @param a : Left subtree expression
-     * @param b : Right subtree expression
-     * @return : Expression for the combined subtrees
+     * ITE - ITE : combine using the paper equations
+     * Bool - ITE : use boolean simplifications of the paper
+     * Bool - Bool : use boolean simplifications of the paper
+     *
+     * @param a, Left subtree ITE structure
+     * @param b, Right subtree ITE structure
+     * @return ITE structure for the combined subtree structures
      */
     private ITE AND(ITE a, ITE b) {
         if (a instanceof Structure && b instanceof Structure) {
             Structure a1 = (Structure) a;
             Structure b1 = (Structure) b;
 
-            //int compare = a1.x.compareTo(b1.x);
             int compare = ordering.compare(a1.x.x, b1.x.x);
             if (compare < 0) return AND_XY(a1, b1);
             else if (compare == 0) return AND_XX(a1, b1);
@@ -170,14 +157,15 @@ public class BDD {
     }
 
     /**
-     * Equation 9 for combining ITEs with same variable
+     * Use AND equation with X = Y
      *
-     * @param a : Left subtree expression
-     * @param b : Right subtree expression
-     * @return : Expression for the combined subtrees
+     * ITE(x, (G1H1 + G1H2 + G2H1), G2H2)
+     *
+     * @param a, Left subtree ITE structure
+     * @param b, Right subtree ITE structure
+     * @return ITE structure for the combined subtree structures
      */
     private ITE AND_XX(Structure a, Structure b) {
-        // ITE(x, (G1H1 + G1H2 + G2H1), G2H2)
         return new Structure(
                 a.x,
                 OR(OR(AND(a.left, b.left), AND(a.left, b.right)), AND(a.right, b.left)),
@@ -186,17 +174,18 @@ public class BDD {
     }
 
     /**
-     * Equation 11 for combining ITEs with different variable
-     * Requires: a.x < b.x
+     * Use AND equation with X != Y
+     * Requires that a.x < b.x
      *
-     * @param a : Left subtree expression
-     * @param b : Right subtree expression
-     * @return : Expression for the combined subtrees
+     * ITE(x, G1h, G2h)
+     * with h = ITE(y, H1, H2)
+     *
+     * @param a, Left subtree ITE structure
+     * @param b, Right subtree ITE structure
+     * @return ITE structure for the combined subtree structures
      */
     private ITE AND_XY(Structure a, Structure b) {
-        // ITE(y, H1, H2)
         ITE h = new Structure(b.x, b.left, b.right);
-        // ITE(x, G1h, G2h)
         return new Structure(
                 a.x,
                 AND(a.left, h),
@@ -204,13 +193,23 @@ public class BDD {
         );
     }
 
+    /**
+     * Combine two ITE structures with an OR gate
+     *
+     * ITE - ITE : combine using the paper equations
+     * Bool - ITE : use boolean simplifications of the paper
+     * Bool - Bool : use boolean simplifications of the paper
+     *
+     * @param a, Left subtree ITE structure
+     * @param b, Right subtree ITE structure
+     * @return ITE structure for the combined subtree structures
+     */
     private ITE OR(ITE a, ITE b) {
         if (a instanceof Structure && b instanceof Structure) {
             Structure a1 = (Structure) a;
             Structure b1 = (Structure) b;
 
             int compare = ordering.compare(a1.x.x, b1.x.x);
-            //int compare = a1.x.compareTo(b1.x);
             if (compare < 0) return OR_XY(a1, b1);
             else if (compare == 0) return OR_XX(a1, b1);
             return OR_XY(b1, a1);
@@ -233,14 +232,15 @@ public class BDD {
     }
 
     /**
-     * Equation 10 for combining ITEs with the same variable
+     * Use OR equation with X = Y
      *
-     * @param a : Left subtree expression
-     * @param b : Right subtree expression
-     * @return : Expression for the combined subtrees
+     * ITE(x, (G1 + H1), (G2 + H2))
+     *
+     * @param a, Left subtree ITE structure
+     * @param b, Right subtree ITE structure
+     * @return ITE structure for the combined subtree structures
      */
     private ITE OR_XX(Structure a, Structure b) {
-        // ITE(x, (G1 + H1), (G2 + H2))
         return new Structure(
                 a.x,
                 OR(a.left, b.left),
@@ -249,15 +249,18 @@ public class BDD {
     }
 
     /**
-     * Equation 12 for combining ITEs with different variable
+     * Use OR equation with X != Y
+     * Requires that a.x < b.x
      *
-     * @param a : Left subtree expression
-     * @param b : Right subtree expression
-     * @return : Expression for the combined subtrees
+     * ITE(x, G1, (G2 + h))
+     * with h = ITE(y, H1, H2)
+     *
+     * @param a, Left subtree ITE structure
+     * @param b, Right subtree ITE structure
+     * @return ITE structure for the combined subtree structures
      */
     private ITE OR_XY(Structure a, Structure b) {
         ITE h = new Structure(b.x, b.left, b.right);
-        // ITE(x, G1, (G2 + h))
         return new Structure(
                 a.x,
                 a.left,

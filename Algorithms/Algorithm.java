@@ -18,13 +18,13 @@ public class Algorithm {
     /**
      * Evaluate the cut sets of the Attack Tree using the algorithm
      * @param at, the Attack Tree
+     * @param eo, ordering for the entries.
      * @param k, maximum number of results
-     * @param prints, prints for AT-DOT, AT-UPPAAL, Variable ordering, and BDD-DOT.
-     * @return results for the AT (results.size() <= K)
+     * @param prints, prints for AT-DOT, AT-UPPAAL, Variable ordering, and BDD-DOT for debugging.
+     * @return Set of Entry results for the AT with (results.size() <= K)
      */
     public static ArrayList<Entry> evaluate(AT at, EntryOrdering eo, int k, boolean subsuming, boolean prints) {
         AttackTree[] mapping = at.getMapping();
-
         Ordering ordering = at.attackTreeOrdering();
         BDD bdd = new BDD(at, ordering, subsuming);
 
@@ -44,10 +44,11 @@ public class Algorithm {
     }
 
     /**
-     * Evaluate the cut sets of the Attack Tree using the algorithm. Unbounded.
+     * Evaluate all the cut sets of the Attack Tree using the algorithm.
      * @param at, the Attack Tree
-     * @param prints, prints for AT-DOT, AT-UPPAAL, Variable ordering, and BDD-DOT.
-     * @return results for the AT (results.size() <= K)
+     * @param eo, ordering for the entries
+     * @param prints, prints for AT-DOT, AT-UPPAAL, Variable ordering, and BDD-DOT for debugging.
+     * @return Set of Entry results for the AT with (results.size() <= K)
      */
     public static ArrayList<Entry> evaluate(AT at, EntryOrdering eo, boolean subsuming, boolean prints) {
         return evaluate(at, eo, Integer.MAX_VALUE, subsuming, prints);
@@ -58,6 +59,7 @@ public class Algorithm {
      * Traverse the BDD based on the sorting of the entries.
      * @param bdd, BDD of the AT
      * @param mapping, mapping of ID -> AttackTree
+     * @param eo, ordering for the entries
      * @param k, maximum number of results (to determine top-K)
      * @return possible cut sets
      */

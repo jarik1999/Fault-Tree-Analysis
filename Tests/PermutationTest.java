@@ -2,7 +2,7 @@ package Tests;
 
 import Algorithms.Algorithm;
 import AttackTree.AT;
-import Examples.AT_Examples;
+import Examples.ATExamples;
 import Permutations.Permutations;
 import Structures.AttackTree.AttackTree;
 import Structures.Traversal.Entry;
@@ -58,19 +58,19 @@ public class PermutationTest {
 
     private void testTopologySetsUppaal() {
         // In the subsumed Uppaal tree, ech solution has only one possible ordering
-        AT uppaal = AT_Examples.openJSON("Uppaal_Example.json");
+        AT uppaal = ATExamples.openJSON("Uppaal_Example.json");
         testTopologyOrderings(uppaal, new int[] {1, 1, 1});
     }
 
     private void testTopologySetsFigure1() {
         // In the subsumed Figure 1 tree, we have solution of size 1, 2, 2. No sand gates so 1!, 2!, 2! orderings
-        AT figure1 = AT_Examples.openJSON("Paper_Figure_1.json");
+        AT figure1 = ATExamples.openJSON("Paper_Figure_1.json");
         testTopologyOrderings(figure1, new int[] {1, 2, 2});
     }
 
     private void testTopologySetsFigure3() {
         // In the subsumed Figure 3 tree, we have solutions of size 2, 2, 2, 2. No sand gates so 2!, 2!, 2!, 2!
-        AT at = AT_Examples.openJSON("Paper_Figure_3.json");
+        AT at = ATExamples.openJSON("Paper_Figure_3.json");
         testTopologyOrderings(at, new int[] {2, 2, 2, 2});
     }
 

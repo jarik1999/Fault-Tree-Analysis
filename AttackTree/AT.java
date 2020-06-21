@@ -1,6 +1,6 @@
 package AttackTree;
 
-import Examples.AT_Examples;
+import Examples.ATExamples;
 import Structures.AttackTree.AttackTree;
 import Structures.AttackTree.Gate;
 import Structures.AttackTree.Leaf;
@@ -55,7 +55,7 @@ public class AT {
 
     /**
      * Converts an AttackTree to an UPPAAL model.
-     * @return [System declarations, Declarations]
+     * @return [System declarations, Declarations] to insert into the framework file
      */
     public ArrayList<String> toUPPAAL() {
         ArrayList<String> result = new ArrayList<>(2);
@@ -64,6 +64,7 @@ public class AT {
         StringBuilder nodes = new StringBuilder();
         StringBuilder system = new StringBuilder("system\n");
         StringBuilder declarations = new StringBuilder();
+
         int[] isAttack = new int[N];
         Arrays.fill(isAttack, 1);
         int[] time = new int[N];
@@ -180,22 +181,8 @@ public class AT {
     public Ordering attackTreeOrdering() {
         int totalBAS = getTotalBAS(at);
 
-        // Create a graph where topo[i] contains the out edges of i
-        // If there is an out_edge it means x < y
-//        ArrayList<Integer>[] topo = new ArrayList[totalBAS];
-//        for (int i = 0; i < totalBAS; i++) topo[i] = new ArrayList<>();
-//        traverse(at, topo, new ArrayList<>());
-
-        ArrayList<Integer>[] topo = getOrderingDAG();
+        ArrayList<Integer>[] topo = getOrderingDAGDefinition1();
         int[] in_degree = getIndegree(topo);
-
-        // Get the in_degree of each BAS.
-//        int[] in_degree = new int[totalBAS];
-//        for (int i = 0; i < totalBAS; i++) {
-//            for (int node: topo[i]) {
-//                in_degree[node]++;
-//            }
-//        }
 
         // BAS with in_degree zero can be first
         int index = 0;
@@ -234,7 +221,7 @@ public class AT {
         ArrayList<ArrayList<Integer>> result = new ArrayList<>();
         boolean[] visited = new boolean[totalBAS];
 
-        ArrayList<Integer>[] topo = getOrderingDAG();
+        ArrayList<Integer>[] topo = getOrderingDAGDefinition1();
         int[] in_degree = getIndegree(topo);
 
         boolean change = true;
@@ -300,7 +287,46 @@ public class AT {
         return result;
     }
 
-    private ArrayList<Integer>[] getOrderingDAG() {
+    /**
+     * Construct the Ordering Graph from the AT according to definition one (used in the paper).
+     * Definition 1: For each SAND-gate l < r for each SAND-gate (L, R\L)
+     * @return Ordering Graph of the AT
+     */
+    private ArrayList<Integer>[] getOrderingDAGDefinition1() {
+        int totalBAS = getTotalBAS(at);
+        AttackTree[] mapping = getMapping();
+        ArrayList<Integer>[] topo = new ArrayList[totalBAS];
+        for (int i = 0; i < totalBAS; i++) topo[i] = new ArrayList<>();
+        for (int i = 0; i < mapping.length; i++) {
+            AttackTree node = mapping[i];
+            if (node instanceof Gate) {
+                Gate gate = (Gate) node;
+                if (gate.type == Type.Sand) {
+                    HashSet<Integer> leftBAS = new HashSet<>();
+                    HashSet<Integer> rightBAS = new HashSet<>();
+                    getBAS(gate.left, leftBAS);
+                    getBAS(gate.right, rightBAS);
+
+                    for (int left: leftBAS) {
+                        if (!rightBAS.contains(left)) {
+                            for (int right: rightBAS) {
+                                topo[left].add(right);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        for (ArrayList<Integer> set: topo) System.out.println(set);
+        return topo;
+    }
+
+    /**
+     * Construct the Ordering Graph from the AT according to definition two (alternative to the paper).
+     * Definition 2: For each SAND-gate l < r for each SAND-gate (L, R)
+     * @return Ordering Graph of the AT
+     */
+    private ArrayList<Integer>[] getOrderingDAGDefinition2() {
         int totalBAS = getTotalBAS(at);
 
         // Create a graph where topo[i] contains the out edges of i
@@ -312,6 +338,11 @@ public class AT {
         return topo;
     }
 
+    /**
+     * Construct the indegree array from the Ordering Graph of the AT
+     * @param topo, Ordering Graph
+     * @return indegree array of the graph
+     */
     private int[] getIndegree(ArrayList<Integer>[] topo) {
         int totalBAS = getTotalBAS(at);
 
@@ -365,9 +396,24 @@ public class AT {
     }
 
     /**
+     * Get the IDs of all BASs in the Attack Tree
+     * @param at, current Attack Tree in traversal
+     * @param bas, set of IDs
+     */
+    private void getBAS(AttackTree at, HashSet<Integer> bas) {
+        if (at instanceof Leaf) {
+            bas.add(((Leaf) at).ID);
+        } else {
+            Gate gate = (Gate) at;
+            getBAS(gate.left, bas);
+            getBAS(gate.right, bas);
+        }
+    }
+
+    /**
      * Searches for highest ID leaf node. LeafID < GateID should hold.
-     * @param at : Attack Tree (Top Node)
-     * @return : Number of BAS in the AT
+     * @param at, Attack Tree (Top Node)
+     * @return Number of BAS in the AT
      */
     private int getTotalBAS(AttackTree at) {
         if (at instanceof Leaf) return at.getID() + 1;
@@ -404,7 +450,6 @@ public class AT {
      * @return copy of the Attack Tree
      */
     public AT copy() {
-        return AT_Examples.openJSON(name);
-        //return new AT(at.copy()); -  Did not work for DAGs
+        return ATExamples.openJSON(name);
     }
 }

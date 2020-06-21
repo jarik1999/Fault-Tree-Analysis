@@ -5,7 +5,7 @@ public class Ordering {
     private int[] ordering;
     private int[] indexes;
 
-    public Ordering(int[] ordering) {
+    Ordering(int[] ordering) {
         this.ordering = ordering;
         indexes = new int[ordering.length];
         for (int i = 0; i < ordering.length; i++) {
@@ -25,11 +25,11 @@ public class Ordering {
         return sb.toString();
     }
 
-    /** Compare two variables
+    /** Compare two variables according to the ordering
      *
-     * @param a : first variable
-     * @param b : second variable
-     * @return : result similar to compareTo of Java
+     * @param a, first variable
+     * @param b, second variable
+     * @return result similar to compareTo of Java
      */
     public int compare(int a, int b) {
         return indexes[a] - indexes[b];

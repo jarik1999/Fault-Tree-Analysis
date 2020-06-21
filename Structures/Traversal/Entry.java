@@ -23,22 +23,20 @@ public class Entry implements Comparable<Entry> {
     public ITE gate;
     public static final int UNCOMPLETED = -1;
     public int[] X;
-    //private ArrayList<Integer> completed;
 
     /**
      * Creates an entry in the traversal of a BDD
      * @param cost, current cost of the BASs that were taken
-     * @param time, time it took to execute the BASs(TODO)
+     * @param time, time it took to execute the BASs (calculate afterwards with getTime() if not using a time ordering)
      * @param gate, current gate location in the BDD
      * @param X, X[ID] = time spent on the node. -1 if not executed.
      */
-    public Entry(EntryOrdering eo, int cost, int time, ITE gate, int[] X) {//, ArrayList<Integer> completed) {
+    public Entry(EntryOrdering eo, int cost, int time, ITE gate, int[] X) {
         this.eo = eo;
         this.cost = cost;
         this.time = time;
         this.gate = gate;
         this.X = X;
-        //this.completed = completed;
     }
 
     /**
@@ -60,7 +58,6 @@ public class Entry implements Comparable<Entry> {
     }
 
     private void updateTime(AttackTree node) {
-        //System.out.println("Checking: " + node.getID() + " - " + node.getParents().size());
         for (Gate parent: node.getParents()) {
             int ID = parent.getID();
             int leftID = parent.left.getID() ;
@@ -83,9 +80,6 @@ public class Entry implements Comparable<Entry> {
 
 
             if (time != X[ID]) {
-               // System.out.println("Keep traversing");
-                //System.out.println(parent.getParents().size());
-                //if (parent.getParents().size() > 0) System.out.println(parent.getParents().get(0).getID());
                 X[ID] = time;
                 this.time = Math.max(this.time, X[ID]);
                 updateTime(parent);
