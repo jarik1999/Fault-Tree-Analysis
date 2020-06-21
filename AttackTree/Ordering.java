@@ -34,4 +34,11 @@ public class Ordering {
     public int compare(int a, int b) {
         return indexes[a] - indexes[b];
     }
+
+    /**
+     * Get the ordering
+     */
+    public int[] getOrdering() {
+        return this.ordering;
+    }
 }

@@ -317,7 +317,6 @@ public class AT {
                 }
             }
         }
-        for (ArrayList<Integer> set: topo) System.out.println(set);
         return topo;
     }
 

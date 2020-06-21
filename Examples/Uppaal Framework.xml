@@ -1,0 +1,845 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>///////////////////////////////////////////////////////////////////
+//  Constants
+// ************************** PASTE DECLARATION CODE BELOW ********************************* //
+
+const int N = 19;
+const bool isattack[N]={1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+const int mintime[N]={3,2,0,3,2,0,0,3,2,0,0,3,2,0,0,3,2,0,0};
+const int maxtime[N]={3,2,0,3,2,0,0,3,2,0,0,3,2,0,0,3,2,0,0};
+const int costs[N]={2,3,0,2,3,0,0,2,3,0,0,2,3,0,0,2,3,0,0};
+
+// *************************** DECLARATION CODE ENDS HERE. LEAVE BELOW UNTOUCHED ************ //
+
+
+///////////////////////////////////////////////////////////////////
+//  Communication channels
+
+broadcast chan c;
+broadcast chan act[N];
+broadcast chan fail[N];
+broadcast chan success[N];
+
+///////////////////////////////////////////////////////////////////
+//  Variables
+
+clock time;
+int costA;  // cost of attacks
+int costD;  // cost of defences
+
+///////////////////////////////////////////////////////////////////
+// Utility functions
+
+void add_cost(int id) {
+    if (isattack[id])
+        costA += costs[id];  // this leaf is an attack
+    else
+        costD += costs[id];  // this leaf is a defence
+}
+
+
+
+
+///////////////////////////////////////////////////////////////////
+// Attack blocking (legacy--deprecated)
+
+const int N_BLOCKED = 1; /* Nr. of blocked attack combinations */
+
+/* *************************
+ * Format of the blocked array:
+ *  - each row contains one blocked attack combination;
+ *  - each row contains, in order, a value 'n' describing
+ *    how many BAs are present in this combination,
+ *    followed by the blocked attack IDs.
+ * Example: { {2, 1, 2}, {4, 2, 3, 4, 5} } blocks the attack combination 1 &amp; 2, and the combination 2 &amp; 3 &amp; 4 &amp; 5.
+ */
+const int blocked[N_BLOCKED][4] = {
+  {0, -1, -1, -1}  // Don't block (allow all attacks)
+//  {1, 2, -1, -1}  // Block leaf 2
+//  {1, 4, -1, -1}  // Block leaf 4
+};
+int blocked_counters[N_BLOCKED] = {0};
+</declaration>
+	<template>
+		<name>Leaf</name>
+		<parameter>int id</parameter>
+		<declaration>clock t;
+
+bool now_blocked = false;
+
+void check_blocked(int id)
+{
+    int i;
+    for (i = 0; i &lt; N_BLOCKED; i++) {
+        int j;
+        for (j = 1; j &lt;= blocked[i][0]; j++) {
+            if (blocked[i][j] == id) {
+                if (++blocked_counters[i] == blocked[i][0])
+                    now_blocked = true;
+            }
+        }
+    }
+}
+</declaration>
+		<location id="id0" x="102" y="127" color="#ffc0cb">
+			<name x="92" y="93">nok</name>
+			<label kind="invariant" x="92" y="144">t'==0</label>
+		</location>
+		<location id="id1" x="102" y="25" color="#00ffff">
+			<name x="92" y="-9">ok</name>
+			<label kind="invariant" x="92" y="42">t'==0</label>
+		</location>
+		<location id="id2" x="-136" y="25" color="#ffffff">
+			<name x="-187" y="-8">attack_ends</name>
+			<committed/>
+		</location>
+		<location id="id3" x="-408" y="-59">
+			<name x="-476" y="-93">goal_reached_beforehand</name>
+			<label kind="invariant" x="-467" y="-59">t'==0</label>
+		</location>
+		<location id="id4" x="-408" y="25">
+			<name x="-434" y="42">attack_starts</name>
+			<label kind="invariant" x="-434" y="59">t&lt;=maxtime[id]</label>
+		</location>
+		<location id="id5" x="-569" y="25" color="#ffffff">
+			<label kind="invariant" x="-628" y="17">t'==1</label>
+			<urgent/>
+		</location>
+		<location id="id6" x="-569" y="127">
+			<name x="-577" y="144">ini</name>
+			<label kind="invariant" x="-628" y="119">t'==0</label>
+		</location>
+		<location id="id7" x="-569" y="-59">
+			<name x="-594" y="-93">unused</name>
+			<label kind="invariant" x="-628" y="-59">t'==0</label>
+		</location>
+		<init ref="id6"/>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-76" y="76">fail[id]!</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-68" y="-8">!now_blocked</label>
+			<label kind="synchronisation" x="-68" y="8">success[id]!</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-348" y="-8">t&gt;=mintime[id]</label>
+			<label kind="assignment" x="-347" y="9">check_blocked(id)</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id3"/>
+			<label kind="guard" x="-467" y="-42">t&gt;=0</label>
+			<label kind="synchronisation" x="-400" y="-25">c?</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id4"/>
+			<label kind="assignment" x="-535" y="8">add_cost(id)</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-628" y="-42">t==0</label>
+			<label kind="synchronisation" x="-629" y="-25">fail[id]!</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-560" y="85">t == 0</label>
+			<label kind="synchronisation" x="-560" y="68">act[id]?</label>
+		</transition>
+	</template>
+	<template>
+		<name>And</name>
+		<parameter>int id, int id1, int id2</parameter>
+		<declaration>clock t;</declaration>
+		<location id="id8" x="773" y="68">
+			<label kind="invariant" x="790" y="51">t&lt;=maxtime[id]</label>
+		</location>
+		<location id="id9" x="637" y="170">
+		</location>
+		<location id="id10" x="637" y="0" color="#ffffff">
+			<committed/>
+		</location>
+		<location id="id11" x="637" y="136">
+		</location>
+		<location id="id12" x="909" y="153" color="#00ffff">
+			<name x="900" y="170">ok</name>
+		</location>
+		<location id="id13" x="773" y="153" color="#ffffff">
+			<committed/>
+		</location>
+		<location id="id14" x="459" y="85">
+			<name x="476" y="76">waiting</name>
+		</location>
+		<location id="id15" x="909" y="0" color="#ffc0cb">
+			<name x="901" y="-34">nok</name>
+		</location>
+		<location id="id16" x="357" y="85" color="#ffffff">
+			<committed/>
+		</location>
+		<location id="id17" x="255" y="85" color="#ffffff">
+			<committed/>
+		</location>
+		<location id="id18" x="119" y="85">
+			<name x="109" y="51">ini</name>
+		</location>
+		<init ref="id18"/>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id12"/>
+			<label kind="guard" x="790" y="68">t&gt;=mintime[id]</label>
+			<label kind="synchronisation" x="824" y="85">success[id]!</label>
+			<nail x="909" y="68"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id8"/>
+			<label kind="guard" x="782" y="127">t&gt;=0</label>
+			<label kind="assignment" x="782" y="110">t:=0</label>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="646" y="76">fail[id1]?</label>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="646" y="59">fail[id2]?</label>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="654" y="153">success[id1]?</label>
+			<nail x="748" y="170"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="654" y="119">success[id2]?</label>
+			<nail x="748" y="136"/>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="518" y="153">success[id2]?</label>
+			<nail x="518" y="170"/>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="518" y="119">success[id1]?</label>
+			<nail x="493" y="136"/>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id15"/>
+			<label kind="synchronisation" x="816" y="-17">fail[id]!</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="527" y="17">fail[id2]?</label>
+			<nail x="501" y="34"/>
+			<nail x="612" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="526" y="-17">fail[id1]?</label>
+			<nail x="527" y="0"/>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id14"/>
+			<label kind="synchronisation" x="375" y="68">act[id2]!</label>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id16"/>
+			<label kind="synchronisation" x="273" y="68">act[id1]!</label>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="137" y="68">act[id]?</label>
+			<label kind="assignment" x="137" y="85">add_cost(id)</label>
+		</transition>
+	</template>
+	<template>
+		<name>Nand</name>
+		<parameter>int id, int id1, int idn</parameter>
+		<declaration>clock t;</declaration>
+		<location id="id19" x="654" y="-42">
+		</location>
+		<location id="id20" x="654" y="-212" color="#ffffff">
+			<committed/>
+		</location>
+		<location id="id21" x="654" y="-76">
+		</location>
+		<location id="id22" x="790" y="-59" color="#ffffff">
+			<committed/>
+		</location>
+		<location id="id23" x="476" y="-127">
+			<name x="493" y="-136">waiting</name>
+		</location>
+		<location id="id24" x="926" y="-212" color="#ffc0cb">
+			<name x="918" y="-246">nok</name>
+		</location>
+		<location id="id25" x="374" y="-127" color="#ffffff">
+			<committed/>
+		</location>
+		<location id="id26" x="272" y="-127" color="#ffffff">
+			<committed/>
+		</location>
+		<location id="id27" x="136" y="-127">
+			<name x="126" y="-161">ini</name>
+		</location>
+		<location id="id28" x="790" y="-144">
+			<label kind="invariant" x="807" y="-161">t&lt;=maxtime[id]</label>
+		</location>
+		<location id="id29" x="926" y="-59" color="#00ffff">
+			<name x="917" y="-42">ok</name>
+		</location>
+		<init ref="id27"/>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id28"/>
+			<label kind="guard" x="799" y="-85">t&gt;=0</label>
+			<label kind="assignment" x="799" y="-102">t:=0</label>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="663" y="-136">fail[id1]?</label>
+		</transition>
+		<transition>
+			<source ref="id21"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="663" y="-153">success[idn]?</label>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="673" y="-59">success[id1]?</label>
+			<nail x="765" y="-42"/>
+		</transition>
+		<transition>
+			<source ref="id21"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="673" y="-93">fail[idn]?</label>
+			<nail x="765" y="-76"/>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id19"/>
+			<label kind="synchronisation" x="537" y="-59">fail[idn]?</label>
+			<nail x="535" y="-42"/>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id21"/>
+			<label kind="synchronisation" x="537" y="-93">success[id1]?</label>
+			<nail x="510" y="-76"/>
+		</transition>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="833" y="-229">fail[id]!</label>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="535" y="-195">success[idn]?</label>
+			<nail x="518" y="-178"/>
+			<nail x="629" y="-178"/>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="545" y="-229">fail[id1]?</label>
+			<nail x="544" y="-212"/>
+		</transition>
+		<transition>
+			<source ref="id25"/>
+			<target ref="id23"/>
+			<label kind="synchronisation" x="392" y="-144">act[idn]!</label>
+		</transition>
+		<transition>
+			<source ref="id26"/>
+			<target ref="id25"/>
+			<label kind="synchronisation" x="290" y="-144">act[id1]!</label>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id26"/>
+			<label kind="synchronisation" x="154" y="-144">act[id]?</label>
+			<label kind="assignment" x="154" y="-127">add_cost(id)</label>
+		</transition>
+		<transition>
+			<source ref="id28"/>
+			<target ref="id29"/>
+			<label kind="guard" x="807" y="-144">t&gt;=mintime[id]</label>
+			<label kind="synchronisation" x="841" y="-127">success[id]!</label>
+			<nail x="926" y="-144"/>
+		</transition>
+	</template>
+	<template>
+		<name>Or</name>
+		<parameter>int id, int id1, int id2</parameter>
+		<declaration>clock t;</declaration>
+		<location id="id30" x="85" y="204">
+			<label kind="invariant" x="102" y="204">t&lt;=maxtime[id]</label>
+		</location>
+		<location id="id31" x="255" y="357" color="#ffc0cb">
+			<name x="247" y="374">nok</name>
+		</location>
+		<location id="id32" x="119" y="357" color="#ffffff">
+			<committed/>
+		</location>
+		<location id="id33" x="-17" y="374">
+		</location>
+		<location id="id34" x="-17" y="340">
+		</location>
+		<location id="id35" x="255" y="204" color="#00ffff">
+			<name x="247" y="170">ok</name>
+		</location>
+		<location id="id36" x="-17" y="204" color="#ffffff">
+			<committed/>
+		</location>
+		<location id="id37" x="-195" y="289">
+			<name x="-178" y="280">waiting</name>
+		</location>
+		<location id="id38" x="-297" y="289" color="#ffffff">
+			<committed/>
+		</location>
+		<location id="id39" x="-399" y="289" color="#ffffff">
+			<committed/>
+		</location>
+		<location id="id40" x="-535" y="289">
+			<name x="-545" y="255">ini</name>
+		</location>
+		<init ref="id40"/>
+		<transition>
+			<source ref="id30"/>
+			<target ref="id35"/>
+			<label kind="guard" x="102" y="221">t&gt;=mintime[id]</label>
+			<label kind="synchronisation" x="127" y="187">success[id]!</label>
+		</transition>
+		<transition>
+			<source ref="id36"/>
+			<target ref="id30"/>
+			<label kind="guard" x="8" y="187">t&gt;=0</label>
+			<label kind="assignment" x="8" y="204">t:=0</label>
+		</transition>
+		<transition>
+			<source ref="id33"/>
+			<target ref="id36"/>
+			<label kind="synchronisation" x="-8" y="280">success[id1]?</label>
+		</transition>
+		<transition>
+			<source ref="id34"/>
+			<target ref="id36"/>
+			<label kind="synchronisation" x="-8" y="263">success[id2]?</label>
+		</transition>
+		<transition>
+			<source ref="id32"/>
+			<target ref="id31"/>
+			<label kind="synchronisation" x="144" y="340">fail[id]!</label>
+		</transition>
+		<transition>
+			<source ref="id33"/>
+			<target ref="id32"/>
+			<label kind="synchronisation" x="9" y="357">fail[id1]?</label>
+			<nail x="94" y="374"/>
+		</transition>
+		<transition>
+			<source ref="id34"/>
+			<target ref="id32"/>
+			<label kind="synchronisation" x="9" y="323">fail[id2]?</label>
+			<nail x="94" y="340"/>
+		</transition>
+		<transition>
+			<source ref="id37"/>
+			<target ref="id33"/>
+			<label kind="synchronisation" x="-119" y="357">fail[id2]?</label>
+			<nail x="-127" y="374"/>
+		</transition>
+		<transition>
+			<source ref="id37"/>
+			<target ref="id34"/>
+			<label kind="synchronisation" x="-119" y="323">fail[id1]?</label>
+			<nail x="-153" y="340"/>
+		</transition>
+		<transition>
+			<source ref="id37"/>
+			<target ref="id36"/>
+			<label kind="synchronisation" x="-144" y="221">success[id2]?</label>
+			<nail x="-161" y="238"/>
+			<nail x="-42" y="238"/>
+		</transition>
+		<transition>
+			<source ref="id37"/>
+			<target ref="id36"/>
+			<label kind="synchronisation" x="-136" y="187">success[id1]?</label>
+			<nail x="-136" y="204"/>
+		</transition>
+		<transition>
+			<source ref="id38"/>
+			<target ref="id37"/>
+			<label kind="synchronisation" x="-279" y="272">act[id2]!</label>
+		</transition>
+		<transition>
+			<source ref="id39"/>
+			<target ref="id38"/>
+			<label kind="synchronisation" x="-381" y="272">act[id1]!</label>
+		</transition>
+		<transition>
+			<source ref="id40"/>
+			<target ref="id39"/>
+			<label kind="synchronisation" x="-517" y="272">act[id]?</label>
+			<label kind="assignment" x="-517" y="289">add_cost(id)</label>
+		</transition>
+	</template>
+	<template>
+		<name>Sand</name>
+		<parameter>int id, int id1, int id2</parameter>
+		<declaration>clock t;</declaration>
+		<location id="id41" x="-17" y="110" color="#ffc0cb">
+			<name x="-27" y="76">nok</name>
+		</location>
+		<location id="id42" x="-178" y="-8">
+			<label kind="invariant" x="-161" y="-8">t&lt;=maxtime[id]</label>
+		</location>
+		<location id="id43" x="-382" y="110" color="#ffffff">
+			<committed/>
+		</location>
+		<location id="id44" x="-272" y="-8">
+		</location>
+		<location id="id45" x="-391" y="-8" color="#ffffff">
+			<committed/>
+		</location>
+		<location id="id46" x="-17" y="-8" color="#00ffff">
+			<name x="-27" y="-42">ok</name>
+		</location>
+		<location id="id47" x="-484" y="-8">
+		</location>
+		<location id="id48" x="-595" y="-8" color="#ffffff">
+			<committed/>
+		</location>
+		<location id="id49" x="-722" y="-8">
+			<name x="-732" y="-42">ini</name>
+		</location>
+		<init ref="id49"/>
+		<transition>
+			<source ref="id44"/>
+			<target ref="id43"/>
+			<label kind="synchronisation" x="-340" y="34">fail[id2]?</label>
+			<nail x="-272" y="51"/>
+			<nail x="-365" y="51"/>
+		</transition>
+		<transition>
+			<source ref="id43"/>
+			<target ref="id41"/>
+			<label kind="synchronisation" x="-161" y="93">fail[id]!</label>
+		</transition>
+		<transition>
+			<source ref="id42"/>
+			<target ref="id46"/>
+			<label kind="guard" x="-161" y="8">t&gt;=mintime[id]</label>
+			<label kind="synchronisation" x="-160" y="-25">success[id]!</label>
+		</transition>
+		<transition>
+			<source ref="id44"/>
+			<target ref="id42"/>
+			<label kind="guard" x="-263" y="-51">t&gt;=0</label>
+			<label kind="synchronisation" x="-272" y="-68">success[id2]?</label>
+			<label kind="assignment" x="-221" y="-51">t:=0</label>
+			<nail x="-272" y="-51"/>
+			<nail x="-177" y="-51"/>
+		</transition>
+		<transition>
+			<source ref="id47"/>
+			<target ref="id43"/>
+			<label kind="synchronisation" x="-476" y="34">fail[id1]?</label>
+			<nail x="-484" y="51"/>
+			<nail x="-399" y="51"/>
+		</transition>
+		<transition>
+			<source ref="id45"/>
+			<target ref="id44"/>
+			<label kind="synchronisation" x="-366" y="-25">act[id2]!</label>
+		</transition>
+		<transition>
+			<source ref="id47"/>
+			<target ref="id45"/>
+			<label kind="synchronisation" x="-484" y="-68">success[id1]?</label>
+			<nail x="-484" y="-51"/>
+			<nail x="-391" y="-51"/>
+		</transition>
+		<transition>
+			<source ref="id48"/>
+			<target ref="id47"/>
+			<label kind="synchronisation" x="-576" y="-25">act[id1]!</label>
+		</transition>
+		<transition>
+			<source ref="id49"/>
+			<target ref="id48"/>
+			<label kind="synchronisation" x="-704" y="-25">act[id]?</label>
+			<label kind="assignment" x="-704" y="-8">add_cost(id)</label>
+		</transition>
+	</template>
+	<template>
+		<name>Snand</name>
+		<parameter>int id, int id1, int idn</parameter>
+		<declaration>clock t;</declaration>
+		<location id="id50" x="-272" y="-8">
+		</location>
+		<location id="id51" x="-382" y="110" color="#ffffff">
+			<committed/>
+		</location>
+		<location id="id52" x="-17" y="110" color="#ffc0cb">
+			<name x="-27" y="76">nok</name>
+		</location>
+		<location id="id53" x="-178" y="-8">
+			<label kind="invariant" x="-161" y="-8">t&lt;=maxtime[id]</label>
+		</location>
+		<location id="id54" x="-17" y="-8" color="#00ffff">
+			<name x="-27" y="-42">ok</name>
+		</location>
+		<location id="id55" x="-484" y="-8">
+		</location>
+		<location id="id56" x="-391" y="-8" color="#ffffff">
+			<committed/>
+		</location>
+		<location id="id57" x="-595" y="-8" color="#ffffff">
+			<committed/>
+		</location>
+		<location id="id58" x="-722" y="-8">
+			<name x="-732" y="-42">ini</name>
+		</location>
+		<init ref="id58"/>
+		<transition>
+			<source ref="id50"/>
+			<target ref="id51"/>
+			<label kind="synchronisation" x="-374" y="34">success[idn]?</label>
+			<nail x="-272" y="51"/>
+			<nail x="-365" y="51"/>
+		</transition>
+		<transition>
+			<source ref="id51"/>
+			<target ref="id52"/>
+			<label kind="synchronisation" x="-161" y="93">fail[id]!</label>
+		</transition>
+		<transition>
+			<source ref="id53"/>
+			<target ref="id54"/>
+			<label kind="guard" x="-161" y="8">t&gt;=mintime[id]</label>
+			<label kind="synchronisation" x="-160" y="-25">success[id]!</label>
+		</transition>
+		<transition>
+			<source ref="id50"/>
+			<target ref="id53"/>
+			<label kind="guard" x="-263" y="-51">t&gt;=0</label>
+			<label kind="synchronisation" x="-263" y="-68">fail[idn]?</label>
+			<label kind="assignment" x="-221" y="-51">t:=0</label>
+			<nail x="-272" y="-51"/>
+			<nail x="-177" y="-51"/>
+		</transition>
+		<transition>
+			<source ref="id55"/>
+			<target ref="id51"/>
+			<label kind="synchronisation" x="-476" y="34">fail[id1]?</label>
+			<nail x="-484" y="51"/>
+			<nail x="-399" y="51"/>
+		</transition>
+		<transition>
+			<source ref="id56"/>
+			<target ref="id50"/>
+			<label kind="synchronisation" x="-366" y="-25">act[idn]!</label>
+		</transition>
+		<transition>
+			<source ref="id55"/>
+			<target ref="id56"/>
+			<label kind="synchronisation" x="-484" y="-68">success[id1]?</label>
+			<nail x="-484" y="-51"/>
+			<nail x="-391" y="-51"/>
+		</transition>
+		<transition>
+			<source ref="id57"/>
+			<target ref="id55"/>
+			<label kind="synchronisation" x="-576" y="-25">act[id1]!</label>
+		</transition>
+		<transition>
+			<source ref="id58"/>
+			<target ref="id57"/>
+			<label kind="synchronisation" x="-704" y="-25">act[id]?</label>
+			<label kind="assignment" x="-704" y="-8">add_cost(id)</label>
+		</transition>
+	</template>
+	<template>
+		<name>TopLevel</name>
+		<parameter>int id</parameter>
+		<location id="id59" x="-323" y="68" color="#ffc0cb">
+			<name x="-331" y="85">nok</name>
+			<label kind="invariant" x="-416" y="59">time'==0</label>
+		</location>
+		<location id="id60" x="-161" y="-153" color="#00ffff">
+			<name x="-171" y="-187">ok</name>
+			<label kind="invariant" x="-254" y="-161">time'==0</label>
+		</location>
+		<location id="id61" x="-161" y="-51" color="#ffffff">
+			<committed/>
+		</location>
+		<location id="id62" x="-323" y="-51">
+			<name x="-357" y="-85">waiting</name>
+			<label kind="invariant" x="-416" y="-34">time'==1</label>
+		</location>
+		<location id="id63" x="-493" y="-51" color="#ffffff">
+			<name x="-503" y="-85">ini</name>
+			<committed/>
+		</location>
+		<init ref="id63"/>
+		<transition>
+			<source ref="id62"/>
+			<target ref="id59"/>
+			<label kind="guard" x="-314" y="25">time &gt; 0</label>
+			<label kind="synchronisation" x="-314" y="8">fail[id]?</label>
+		</transition>
+		<transition>
+			<source ref="id61"/>
+			<target ref="id60"/>
+			<label kind="synchronisation" x="-152" y="-102">c!</label>
+		</transition>
+		<transition>
+			<source ref="id62"/>
+			<target ref="id61"/>
+			<label kind="guard" x="-289" y="-51">time &gt; 0</label>
+			<label kind="synchronisation" x="-289" y="-68">success[id]?</label>
+		</transition>
+		<transition>
+			<source ref="id63"/>
+			<target ref="id62"/>
+			<label kind="synchronisation" x="-475" y="-68">act[id]!</label>
+			<label kind="assignment" x="-416" y="-51">time := 0</label>
+		</transition>
+	</template>
+	<system>// ************************** PASTE SYSTEM DECLARATION CODE BELOW ********************************* //
+
+Combine_18 = And(18,14,17);
+Combine_14 = And(14,10,13);
+Combine_10 = And(10,6,9);
+Combine_6 = And(6,2,5);
+TOP_2 = Or(2,0,1);
+a_0 = Leaf(0);
+b_1 = Leaf(1);
+TOP_5 = Or(5,3,4);
+a_3 = Leaf(3);
+b_4 = Leaf(4);
+TOP_9 = Or(9,7,8);
+a_7 = Leaf(7);
+b_8 = Leaf(8);
+TOP_13 = Or(13,11,12);
+a_11 = Leaf(11);
+b_12 = Leaf(12);
+TOP_17 = Or(17,15,16);
+a_15 = Leaf(15);
+b_16 = Leaf(16);
+TLE = TopLevel(18);
+system
+Combine_18,Combine_14,Combine_10,Combine_6,TOP_2,a_0,b_1,TOP_5,a_3,b_4,TOP_9,a_7,b_8,TOP_13,a_11,b_12,TOP_17,a_15,b_16,TLE;
+
+// ************************** END OF SYSTEM DECLARATION CODE ********************************* //
+
+
+</system>
+	<queries>
+		<query>
+			<formula>//----------------------------------
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>//---------------  Reachability  ---
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt;(TLE.ok)
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt;(TLE.nok)
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>//-----------------------  Time  ---
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>inf{TLE.ok}: time
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>sup{TLE.ok}: time
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>//-----------------------  Cost  ---
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>inf{TLE.ok}: costA   // attack
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>sup{TLE.ok}: costA   // attack
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>inf{TLE.nok}: costD  // defence
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>sup{TLE.nok}: costD  // defence
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>//----------------------------------
+			</formula>
+			<comment>
+			</comment>
+		</query>
+	</queries>
+</nta>

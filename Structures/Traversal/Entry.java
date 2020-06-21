@@ -5,6 +5,7 @@ import Structures.AttackTree.Gate;
 import Structures.AttackTree.Leaf;
 import Structures.AttackTree.Type;
 import Structures.BDD.ITE;
+import AttackTree.Ordering;
 
 import java.util.ArrayList;
 
@@ -120,7 +121,9 @@ public class Entry implements Comparable<Entry> {
 
     /**
      * Get the completed BASs for the Entry. Checks each of the Leaf nodes to see whether time was spent on them.
-     * Note: These are not necessarily in the correct order.
+     * Note: These are not necessarily in the correct order. For correct order, use the other method and provide
+     * the ordering class used for the construction of the BDD.
+     *
      * @param mapping, mapping of ID -> Attack Tree
      * @return array of BAS IDs that were completed
      */
@@ -131,6 +134,23 @@ public class Entry implements Comparable<Entry> {
                 Leaf leaf = (Leaf) at;
                 if (X[leaf.ID] != UNCOMPLETED) result.add(leaf.ID);
             }
+        }
+        return result;
+    }
+
+    /**
+     * Get the completed BASs for the Entry. Traverses through the BASs according to the Ordering to check which
+     * BASs were involved in the attack to construct the Attack Path.
+     *
+     * @param mapping, mapping of ID -> Attack Tree
+     * @param ordering, ordering of the BASs used in the construction of the BDD
+     * @return array of BAS IDs consistent with the Attack Path of the Entry
+     */
+    public ArrayList<Integer> getCompleted(AttackTree[] mapping, Ordering ordering) {
+        ArrayList<Integer> result = new ArrayList<>();
+        for (int i: ordering.getOrdering()) {
+            Leaf leaf = (Leaf) mapping[i];
+            if (X[leaf.ID] != UNCOMPLETED) result.add(leaf.ID);
         }
         return result;
     }

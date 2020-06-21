@@ -6,6 +6,13 @@ Uses JUnit 5.3 as a testing library.
 - Intellij is able to add this to the class path using Maven when using 'alt + enter' on the unknown @Test
 - For uses such as AT, BDD, Algorithm or Evaluation, this library is not required.
 
+Uses Examples/Uppaal Framework.xml to execute the ATs in Uppaal.
+- The algorithm can convert an AT class to Uppaal with toUppaal().
+- The code will provide the Systems Declarations and Declaration code for Uppaal.
+- The framework indicates where this code has to be pasted in.
+- The possible queries for the AT are available in the framework.
+- Additional information on the framework can be found in the previous paper: https://rd.springer.com/chapter/10.1007/978-3-319-22975-1_11
+
 Algorithms:
 - Algorithm: Contains the Algorithm implementation
 
@@ -19,6 +26,7 @@ BDD:
 
 Examples:
 - ATExamples: Loads AT examples from JSON
+- UppaalFramework: Contans the file to execute the algorithm with Uppaal.
 
 JSON:
 - Contains AT examples from literature or for testing in JSON format
