@@ -26,14 +26,14 @@ BDD:
 
 Examples:
 - ATExamples: Loads AT examples from JSON
-- UppaalFramework: Contans the file to execute the algorithm with Uppaal.
+- UppaalFramework: Contains the file to execute the algorithm with Uppaal.
 
 JSON:
 - Contains AT examples from literature or for testing in JSON format
 
 Permutations:
 - Permutation: Class to obtain permutations of a single set of BASs
-- Permutations: Used to obtain permutations of an attack
+- Permutations: Used to obtain indexed permutations of an attack
 
 Structures:
 - AttackTree: Structure classes for the AT representation
