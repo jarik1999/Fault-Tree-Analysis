@@ -11,17 +11,32 @@ public class Permutations {
     // so we use this array
     private BigInteger[] dp;
     private BigInteger total;
+    private BigInteger[] fact;
 
 
     public Permutations(ArrayList<ArrayList<Integer>> sets) {
         this.n = sets.size();
 
+        int maxSetSize = 0;
+        for (ArrayList<Integer> set: sets) maxSetSize = Math.max(maxSetSize, set.size());
+        updateFactorials(maxSetSize + 1);
+
         this.permutations = new Permutation[n];
         for (int i = 0; i < n; i++) {
-            this.permutations[i] = new Permutation(sets.get(i));
+            this.permutations[i] = new Permutation(sets.get(i), fact);
         }
 
         updateTotalPermutations();
+    }
+
+    /**
+     * Pre-compute all the factorials required by the set permutations to pass along.
+     * @param k, upperbound on maximum factorial required
+     */
+    private void updateFactorials(int k) {
+        fact = new BigInteger[k];
+        fact[0] = fact[1] = BigInteger.ONE;
+        for (int i = 2; i < k; i++) fact[i] = fact[i - 1].multiply(new BigInteger("" + i));
     }
 
     /**

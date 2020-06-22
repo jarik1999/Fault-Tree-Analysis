@@ -46,42 +46,42 @@ public class Evaluation {
      */
     private static void evaluationAll(AT at) {
         System.out.println("--- Conventional - Time - OR");
-        evaluateLinear(at.copy(), at, Type.Or, 20, 1000000000, 1, EntryOrdering.time, false, false);
+        evaluateLinear(at.copy(), at, Type.Or, 20, 1000000000, 1, EntryOrdering.time, false);
         System.out.println("--- Conventional - Time - AND");
-        evaluateLinear(at.copy(), at, Type.And, 20, 1000000000, 1, EntryOrdering.time, false, false);
+        evaluateLinear(at.copy(), at, Type.And, 20, 1000000000, 1, EntryOrdering.time, false);
         System.out.println("--- Conventional - Time - SAND");
-        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, 1, EntryOrdering.time, false, false);
+        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, 1, EntryOrdering.time, false);
         System.out.println("--- Conventional - Cost - OR");
-        evaluateLinear(at.copy(), at, Type.Or, 20, 1000000000, 1, EntryOrdering.cost, false, false);
+        evaluateLinear(at.copy(), at, Type.Or, 20, 1000000000, 1, EntryOrdering.cost, false);
         System.out.println("--- Conventional - Cost - AND");
-        evaluateLinear(at.copy(), at, Type.And, 20, 1000000000, 1, EntryOrdering.cost, false, false);
+        evaluateLinear(at.copy(), at, Type.And, 20, 1000000000, 1, EntryOrdering.cost, false);
         System.out.println("--- Conventional - Cost - SAND");
-        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, 1, EntryOrdering.cost, false, false);
+        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, 1, EntryOrdering.cost, false);
         System.out.println("--- Conventional - Pareto - OR");
-        evaluateLinear(at.copy(), at, Type.Or, 20, 1000000000, Integer.MAX_VALUE, EntryOrdering.cost, false, false);
+        evaluateLinear(at.copy(), at, Type.Or, 20, 1000000000, Integer.MAX_VALUE, EntryOrdering.cost, false);
         System.out.println("--- Conventional - Pareto - AND");
-        evaluateLinear(at.copy(), at, Type.And, 20, 1000000000, Integer.MAX_VALUE, EntryOrdering.cost, false, false);
+        evaluateLinear(at.copy(), at, Type.And, 20, 1000000000, Integer.MAX_VALUE, EntryOrdering.cost, false);
         System.out.println("--- Conventional - Pareto - SAND");
-        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, Integer.MAX_VALUE, EntryOrdering.cost, false, false);
+        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, Integer.MAX_VALUE, EntryOrdering.cost, false);
 
         System.out.println("--- Subsuming - Time - OR");
-        evaluateLinear(at.copy(), at, Type.Or, 20, 1000000000, 1, EntryOrdering.time, true, false);
+        evaluateLinear(at.copy(), at, Type.Or, 20, 1000000000, 1, EntryOrdering.time, true);
         System.out.println("--- Subsuming - Time - AND");
-        evaluateLinear(at.copy(), at, Type.And, 20, 1000000000, 1, EntryOrdering.time, true, false);
+        evaluateLinear(at.copy(), at, Type.And, 20, 1000000000, 1, EntryOrdering.time, true);
         System.out.println("--- Subsuming - Time - SAND");
-        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, 1, EntryOrdering.time, true, false);
+        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, 1, EntryOrdering.time, true);
         System.out.println("--- Subsuming - Cost - OR");
-        evaluateLinear(at.copy(), at, Type.Or, 20, 1000000000, 1, EntryOrdering.cost, true, false);
+        evaluateLinear(at.copy(), at, Type.Or, 20, 1000000000, 1, EntryOrdering.cost, true);
         System.out.println("--- Subsuming - Cost - AND");
-        evaluateLinear(at.copy(), at, Type.And, 20, 1000000000, 1, EntryOrdering.cost, true, false);
+        evaluateLinear(at.copy(), at, Type.And, 20, 1000000000, 1, EntryOrdering.cost, true);
         System.out.println("--- Subsuming - Cost - SAND");
-        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, 1, EntryOrdering.cost, true, false);
+        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, 1, EntryOrdering.cost, true);
         System.out.println("--- Subsuming - Pareto - OR");
-        evaluateLinear(at.copy(), at, Type.Or, 20, 1000000000, Integer.MAX_VALUE, EntryOrdering.cost, true, false);
+        evaluateLinear(at.copy(), at, Type.Or, 20, 1000000000, Integer.MAX_VALUE, EntryOrdering.cost, true);
         System.out.println("--- Subsuming - Pareto - AND");
-        evaluateLinear(at.copy(), at, Type.And, 20, 1000000000, Integer.MAX_VALUE, EntryOrdering.cost, true, false);
+        evaluateLinear(at.copy(), at, Type.And, 20, 1000000000, Integer.MAX_VALUE, EntryOrdering.cost, true);
         System.out.println("--- Subsuming - Pareto - SAND");
-        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, Integer.MAX_VALUE, EntryOrdering.cost, true, false);
+        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, Integer.MAX_VALUE, EntryOrdering.cost, true);
 
     }
 
@@ -91,9 +91,9 @@ public class Evaluation {
      */
     private static void evaluationPareto(AT at) {
         System.out.println("--- Conventional - Pareto - SAND");
-        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, Integer.MAX_VALUE, EntryOrdering.cost, false, false);
+        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, Integer.MAX_VALUE, EntryOrdering.cost, false);
         System.out.println("--- Subsuming - Pareto - SAND");
-        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, Integer.MAX_VALUE, EntryOrdering.cost, true, false);
+        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, Integer.MAX_VALUE, EntryOrdering.cost, true);
     }
 
     /**
@@ -102,9 +102,9 @@ public class Evaluation {
      */
     private static void evaluationParetoOr(AT at) {
         System.out.println("--- Conventional - Pareto - OR");
-        evaluateLinear(at.copy(), at, Type.Or, 20, 1000000000, Integer.MAX_VALUE, EntryOrdering.cost, false, false);
+        evaluateLinear(at.copy(), at, Type.Or, 20, 1000000000, Integer.MAX_VALUE, EntryOrdering.cost, false);
         System.out.println("--- Subsuming - Pareto - OR");
-        evaluateLinear(at.copy(), at, Type.Or, 20, 1000000000, Integer.MAX_VALUE, EntryOrdering.cost, true, false);
+        evaluateLinear(at.copy(), at, Type.Or, 20, 1000000000, Integer.MAX_VALUE, EntryOrdering.cost, true);
     }
 
     /**
@@ -113,10 +113,10 @@ public class Evaluation {
      */
     private static void evaluationTime(AT at) {
         System.out.println("--- Conventional - Time - SAND");
-        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, 1, EntryOrdering.time, false, false);
+        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, 1, EntryOrdering.time, false);
 
         System.out.println("--- Subsuming - Time - SAND");
-        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, 1, EntryOrdering.time, true, false);
+        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, 1, EntryOrdering.time, true);
     }
 
     /**
@@ -125,10 +125,10 @@ public class Evaluation {
      */
     private static void evaluationCost(AT at) {
         System.out.println("--- Conventional - Cost - SAND");
-        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, 1, EntryOrdering.cost, false, false);
+        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, 1, EntryOrdering.cost, false);
 
         System.out.println("--- Subsuming - Cost - SAND");
-        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, 1, EntryOrdering.cost, true, false);
+        evaluateLinear(at.copy(), at, Type.Sand, 20, 1000000000, 1, EntryOrdering.cost, true);
     }
 
     /**
@@ -143,12 +143,11 @@ public class Evaluation {
      * @param k, amount of solutions to compute
      * @param eo, ordering of the entries (cost/time)
      * @param subsuming, whether to perfrom subsuming
-     * @param resultPrints, prints debugging information in between execution
      */
-    private static void evaluateLinear(AT at, AT combine, Type type, int maxAmount, long maxTime, int k, EntryOrdering eo, boolean subsuming, boolean resultPrints) {
+    private static void evaluateLinear(AT at, AT combine, Type type, int maxAmount, long maxTime, int k, EntryOrdering eo, boolean subsuming) {
         for (int i = 0; i < 5; i++) {
             ArrayList<Result> results = new ArrayList<>();
-            evaluateLinear(at.copy(), combine, type, maxAmount, maxTime, k, eo, subsuming, resultPrints, results);
+            evaluateLinear(at.copy(), combine, type, maxAmount, maxTime, k, eo, subsuming, results);
 
             System.out.println("- Nodes - ");
             for (Result r: results) System.out.println(r.totalNodes);
@@ -170,16 +169,15 @@ public class Evaluation {
      * @param k, amount of solutions to compute
      * @param eo, ordering of the entries (cost/time)
      * @param subsuming, whether to perform subsuming
-     * @param resultPrints, prints debugging information in between execution
      * @param results, store current results of the algorithm
      */
-    private static void evaluateLinear(AT at, AT combine, Type type, int maxAmount, long maxTime, int k, EntryOrdering eo, boolean subsuming, boolean resultPrints, ArrayList<Result> results) {
+    private static void evaluateLinear(AT at, AT combine, Type type, int maxAmount, long maxTime, int k, EntryOrdering eo, boolean subsuming, ArrayList<Result> results) {
         if (maxAmount == 0) return;
-        results.add(evaluate(at, k, eo, subsuming, resultPrints));
+        results.add(evaluate(at, k, eo, subsuming));
 
         if (results.get(results.size() - 1).time > maxTime) return;
 
-        evaluateLinear(combine(at, combine.copy(), type), combine, type, maxAmount - 1, maxTime, k ,eo, subsuming, resultPrints, results);
+        evaluateLinear(combine(at, combine.copy(), type), combine, type, maxAmount - 1, maxTime, k ,eo, subsuming, results);
     }
 
     /**
@@ -188,10 +186,9 @@ public class Evaluation {
      * @param k, amount of solutions to compute
      * @param eo, ordering of Entries (cost/time)
      * @param subsuming, whether to perform subsuming
-     * @param resultPrints, prints debugging information in between execution
      * @return Result of the AT
      */
-    private static Result evaluate(AT at, int k, EntryOrdering eo, boolean subsuming, boolean resultPrints) {
+    private static Result evaluate(AT at, int k, EntryOrdering eo, boolean subsuming) {
         long time = System.nanoTime();
         ArrayList<Entry> result = Algorithm.evaluate(at, eo, k, subsuming, false);
         time = System.nanoTime() - time;
